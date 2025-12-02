@@ -265,6 +265,8 @@ def train(config, config_path):
             print(f"Twitter dataset")
     elif config_path.split('/')[-2].split('-')[0] == "deepseek":
         dataset_type = "deepseek"
+    elif config_path.split('/')[-2].split('-')[0] == "gemini":
+        dataset_type = "gemini"
     else:
         dataset_type = "minigpt4-classify"
 

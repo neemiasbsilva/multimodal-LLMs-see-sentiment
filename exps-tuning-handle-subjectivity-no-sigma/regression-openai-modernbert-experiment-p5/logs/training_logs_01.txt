@@ -1,0 +1,1 @@
+Epoch 1/100 | Train Loss: 0.5797 | Val Loss: 0.5843 | MAE: 0.6231 | Pearson: 0.8341 | R2: 0.5675
