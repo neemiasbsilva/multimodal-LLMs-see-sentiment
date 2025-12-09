@@ -225,7 +225,7 @@ def fit_reg(
 
     df_metrics = pd.DataFrame([])
     best_pearson = -1.0 
-    patience = 5 # Reduced patience slightly for 10-fold speed
+    patience = 20 # Reduced patience slightly for 10-fold speed
     patience_counter = 0
 
     for epoch in tqdm(range(epochs)):

@@ -1,12 +1,23 @@
-Epoch 1/100 | Train Loss: 0.3651 | Val Loss: 0.3032 | MAE: 0.3966 | Pearson: 0.8041
-Epoch 2/100 | Train Loss: 0.2574 | Val Loss: 0.2764 | MAE: 0.4042 | Pearson: 0.8241
-Epoch 3/100 | Train Loss: 0.1673 | Val Loss: 0.3466 | MAE: 0.3550 | Pearson: 0.7958
-Epoch 4/100 | Train Loss: 0.0936 | Val Loss: 0.3165 | MAE: 0.3676 | Pearson: 0.8068
-Epoch 5/100 | Train Loss: 0.0498 | Val Loss: 0.3251 | MAE: 0.3465 | Pearson: 0.7936
-Epoch 6/100 | Train Loss: 0.0339 | Val Loss: 0.2861 | MAE: 0.3196 | Pearson: 0.8133
-Epoch 7/100 | Train Loss: 0.0188 | Val Loss: 0.2959 | MAE: 0.3141 | Pearson: 0.8116
-Epoch 8/100 | Train Loss: 0.0117 | Val Loss: 0.3021 | MAE: 0.3099 | Pearson: 0.8095
-Epoch 9/100 | Train Loss: 0.0077 | Val Loss: 0.3090 | MAE: 0.3163 | Pearson: 0.8003
-Epoch 10/100 | Train Loss: 0.0052 | Val Loss: 0.2927 | MAE: 0.3101 | Pearson: 0.8077
-Epoch 11/100 | Train Loss: 0.0047 | Val Loss: 0.2856 | MAE: 0.3030 | Pearson: 0.8141
-Epoch 12/100 | Train Loss: 0.0065 | Val Loss: 0.2973 | MAE: 0.3168 | Pearson: 0.8048
+Epoch 1/100 | Train Loss: 0.7164 | Val Loss: 0.4924 | MAE: 0.5538 | Pearson: 0.7869 | R2: 0.6133
+Epoch 2/100 | Train Loss: 0.4374 | Val Loss: 0.4992 | MAE: 0.5626 | Pearson: 0.8179 | R2: 0.6084
+Epoch 3/100 | Train Loss: 0.3800 | Val Loss: 0.4450 | MAE: 0.5240 | Pearson: 0.8252 | R2: 0.6506
+Epoch 4/100 | Train Loss: 0.3189 | Val Loss: 0.4268 | MAE: 0.5100 | Pearson: 0.8220 | R2: 0.6645
+Epoch 5/100 | Train Loss: 0.2288 | Val Loss: 0.4325 | MAE: 0.5145 | Pearson: 0.8129 | R2: 0.6606
+Epoch 6/100 | Train Loss: 0.0985 | Val Loss: 0.4854 | MAE: 0.5420 | Pearson: 0.8053 | R2: 0.6189
+Epoch 7/100 | Train Loss: 0.0813 | Val Loss: 0.4703 | MAE: 0.5288 | Pearson: 0.8112 | R2: 0.6310
+Epoch 8/100 | Train Loss: 0.0507 | Val Loss: 0.4440 | MAE: 0.5147 | Pearson: 0.8147 | R2: 0.6513
+Epoch 9/100 | Train Loss: 0.0325 | Val Loss: 0.4417 | MAE: 0.5155 | Pearson: 0.8144 | R2: 0.6532
+Epoch 10/100 | Train Loss: 0.0240 | Val Loss: 0.4382 | MAE: 0.5187 | Pearson: 0.8134 | R2: 0.6558
+Epoch 11/100 | Train Loss: 0.0196 | Val Loss: 0.4303 | MAE: 0.5127 | Pearson: 0.8153 | R2: 0.6619
+Epoch 12/100 | Train Loss: 0.0163 | Val Loss: 0.4261 | MAE: 0.5084 | Pearson: 0.8182 | R2: 0.6652
+Epoch 13/100 | Train Loss: 0.0120 | Val Loss: 0.4290 | MAE: 0.5106 | Pearson: 0.8157 | R2: 0.6629
+Epoch 14/100 | Train Loss: 0.0117 | Val Loss: 0.4308 | MAE: 0.5124 | Pearson: 0.8176 | R2: 0.6615
+Epoch 15/100 | Train Loss: 0.0168 | Val Loss: 0.4275 | MAE: 0.5091 | Pearson: 0.8188 | R2: 0.6641
+Epoch 16/100 | Train Loss: 0.0225 | Val Loss: 0.4290 | MAE: 0.5098 | Pearson: 0.8168 | R2: 0.6630
+Epoch 17/100 | Train Loss: 0.0246 | Val Loss: 0.4395 | MAE: 0.5142 | Pearson: 0.8187 | R2: 0.6545
+Epoch 18/100 | Train Loss: 0.0214 | Val Loss: 0.4253 | MAE: 0.5068 | Pearson: 0.8190 | R2: 0.6657
+Epoch 19/100 | Train Loss: 0.0152 | Val Loss: 0.4383 | MAE: 0.5159 | Pearson: 0.8186 | R2: 0.6557
+Epoch 20/100 | Train Loss: 0.0181 | Val Loss: 0.4250 | MAE: 0.5056 | Pearson: 0.8219 | R2: 0.6664
+Epoch 21/100 | Train Loss: 0.0208 | Val Loss: 0.4159 | MAE: 0.4998 | Pearson: 0.8216 | R2: 0.6730
+Epoch 22/100 | Train Loss: 0.0184 | Val Loss: 0.4234 | MAE: 0.5063 | Pearson: 0.8203 | R2: 0.6672
+Epoch 23/100 | Train Loss: 0.0176 | Val Loss: 0.4155 | MAE: 0.4993 | Pearson: 0.8251 | R2: 0.6736
