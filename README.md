@@ -26,16 +26,6 @@ framework for sentiment analysis..</h6>
 The framework supports multiple transformer architectures (ModernBERT, BART, LLaMA, DistilBERT, Swin Transformer) and both fine-tuning and non-fine-tuning experiments. It achieves state-of-the-art performance, outperforming CNN/Transformer baselines by up to 15% across sentiment categories.
 
 
-## Publication
-
-Our article can be found on ... . A [preprint](https://arxiv.org/abs/2508.16873) is publicly available on arXiv as well. You can also find it indexed on gitxiv.
-
-Please cite with the following Bibtex code:
-
-```
-TODO
-```
-
 ### Key Features
 - End-to-end pipeline for sentiment analysis with LLMs
 - Support for multiple transformer architectures and training strategies
