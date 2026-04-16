@@ -66,11 +66,7 @@ graph TD
         G1["• GPT (OS)"]:::mllm
         G2["• GPT (OAI)"]:::mllm
         G3["• DeepSeek"]:::mllm
-    end
-
-    subgraph Key_Task1 [Task 1 Models]
-        direction TB
-        Tphi4["• phi-4"]:::defaultbox
+        G4["• phi-4"]:::mllm
     end
 
     subgraph Key_Pretrained [Pre-trained text LLMs]
