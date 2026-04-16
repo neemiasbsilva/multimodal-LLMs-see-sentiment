@@ -12,10 +12,81 @@
 ---
 
 ## Overview
-<p align="center">
+<!-- <p align="center">
 <img src="reports/mllm-framework.png" width="40%" height="40%">
 <h6 align="center"> Architecture diagram of MLLMsent, our proposed Multimodal Large Language Model
-framework for sentiment analysis..</h6>
+framework for sentiment analysis..</h6> -->
+```mermaid
+graph TD
+    %% Define main node styles matching the image colors
+    classDef prompt fill:#cceeff,stroke:#333,stroke-width:2px;
+    classDef image fill:#f9f9f9,stroke:#333,stroke-width:1px;
+    classDef mllm fill:#d9ead3,stroke:#333,stroke-width:1px;
+    classDef defaultbox fill:#ffffff,stroke:#333,stroke-width:1px;
+    classDef pretrained fill:#f4cccc,stroke:#333,stroke-width:1px;
+    classDef finetuned fill:#cfe2f3,stroke:#333,stroke-width:1px;
+
+    %% Nodes
+    Prompt[Prompt]:::prompt
+    InputImage[Input Image]:::image
+    MLLM(Multimodal Large Language Model <br/> MLLM):::mllm
+    
+    IC[Image Classification]:::defaultbox
+    SP("Sentiment Polarity: ⟨σ_I, P_C⟩"):::defaultbox
+
+    %% Connections for main paths
+    Prompt --> MLLM
+    InputImage --> MLLM
+    
+    %% Task 1
+    MLLM -- "Task 1" --> IC
+    IC --> SP
+
+    %% Task 2 Conceptual visual grouping
+    subgraph Task2 ["Visual Reasoning (Task 2)"]
+        direction TB
+        ID[Image Description]:::defaultbox
+        PTL[Pre-trained text LLM]:::pretrained
+        FTL[Fine-tuned text LLM]:::finetuned
+        TC[Text Classification]:::defaultbox
+        
+        ID --> PTL
+        ID --> FTL
+        PTL --> TC
+        FTL --> TC
+    end
+
+    MLLM --> ID
+    TC -- "Task 2a" --> SP
+    TC -- "Task 2b" --> SP
+
+    %% Model Keys and Legends (Rendered as separate reference blocks)
+    subgraph Key_MLLM [MLLM Models]
+        direction TB
+        G1["• GPT (OS)"]:::mllm
+        G2["• GPT (OAI)"]:::mllm
+        G3["• DeepSeek"]:::mllm
+    end
+
+    subgraph Key_Task1 [Task 1 Models]
+        direction TB
+        Tphi4["• phi-4"]:::defaultbox
+    end
+
+    subgraph Key_Pretrained [Pre-trained text LLMs]
+        direction TB
+        R1["• BART"]:::pretrained
+        R2["• MBERT"]:::pretrained
+        R3["• LLaMA"]:::pretrained
+    end
+
+    subgraph Key_Finetuned [Fine-tuned text LLMs]
+        direction TB
+        B1["• BART"]:::finetuned
+        B2["• MBERT"]:::finetuned
+        B3["• LLaMA"]:::finetuned
+    end
+```
 
 **MLLMsent** is a research framework for investigating sentiment reasoning in MultiModal Large Language Models (MLLMs). It provides end-to-end tools for sentiment analysis from visual content, focusing on how images communicate sentiment through complex, scene-level semantics.
 
