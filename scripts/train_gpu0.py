@@ -194,7 +194,7 @@ def fit(
     patience = 10
     if log_dir.split('/')[0] == "experiments-not-finetuning":
         print("Backbone freeze")
-        patience = 25
+        patience = 50
         freeze_backbone(model)
     # Set random seeds for reproducibility
     torch.manual_seed(42)
@@ -284,6 +284,10 @@ def train(config, config_path):
         dataset_type = "deepseek"
     elif config_path.split('/')[-2].split('-')[0] == "gemini":
         dataset_type = "gemini"
+    elif config_path.split('/')[-2].split('-')[0] == "phi4":
+        dataset_type = "phi4-classify"
+    elif config_path.split('/')[-2].split('-')[0] == "gemma4":
+        dataset_type = "gemma4-classify"
     else:
         dataset_type = "minigpt4-classify"
 
@@ -364,11 +368,7 @@ def train(config, config_path):
             )
 
             df_metrics, y_pred, y_true, f1_val = val(log_dir, model, val_dl, loss_fn, fold, df_metrics, model_name, device, start_time)
-<<<<<<< HEAD
             fine_tuning = "finetuned" if log_dir.split('/')[0] == "experiments-finetuning" else "not_finetuned"
-=======
-            fine_tuning = "finetuned" if log_dir.split('/')[0] != "experiments-not-finetuning" else "not_finetuned"
->>>>>>> e0be7cb034983cf944bf348b84676df09ba4f0ca
             name_arch = dataset_type+"_distilbert"
 
             if f1_val > best_f1:
@@ -460,11 +460,7 @@ def train(config, config_path):
             )
 
             df_metrics, y_pred, y_true, f1_val = val(log_dir, model, val_dl, loss_fn, fold, df_metrics, model_name, device, start_time)
-<<<<<<< HEAD
             fine_tuning = "finetuned" if log_dir.split('/')[0] == "experiments-finetuning" else "not_finetuned"
-=======
-            fine_tuning = "finetuned" if log_dir.split('/')[0] != "experiments-not-finetuning" else "not_finetuned"
->>>>>>> e0be7cb034983cf944bf348b84676df09ba4f0ca
             name_arch = dataset_type+"_modernbert"
 
             if f1_val > best_f1:
