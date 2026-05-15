@@ -1,0 +1,267 @@
+\begin{table*}[htbp]
+\centering
+\caption{Pairwise model comparisons via two-sided paired t-tests. P-values are adjusted using the Holm--Bonferroni correction ($\alpha = 0.05$). Bold rows are significant after correction. $\Delta\bar{F_1}$ is the mean fold-wise difference (Model A $-$ Model B). Group: finetuning, $P_3$, $\sigma{=}3$.}
+\label{tab:holm_ttests_finetuning_p3_alpha3}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}llllrrrl}
+\hline
+\textbf{Exp.} & \textbf{Problem} & \textbf{$\sigma$} & \textbf{Model A} & \textbf{Model B} & \textbf{$\Delta \bar{F_1}$ (\%)} & \textbf{$p_\text{raw}$} & \textbf{$p_\text{Holm}$} \\
+\hline
+\textbf{finetuning} & \textbf{$P_3$} & \textbf{$\sigma{=}3$} & \textbf{bart} & \textbf{openai-modernbert} & \textbf{-8.48} & \textbf{$<$0.001} & \textbf{0.0105} \\
+\textbf{finetuning} & \textbf{$P_3$} & \textbf{$\sigma{=}3$} & \textbf{deepseek-bart} & \textbf{openai-bart} & \textbf{-4.90} & \textbf{$<$0.001} & \textbf{0.0288} \\
+\textbf{finetuning} & \textbf{$P_3$} & \textbf{$\sigma{=}3$} & \textbf{deepseek-bart} & \textbf{openai-modernbert} & \textbf{-6.46} & \textbf{$<$0.001} & \textbf{0.0288} \\
+finetuning & $P_3$ & $\sigma{=}3$ & modernbert & openai-modernbert & -7.71 & $<$0.001 & 0.0958 \\
+finetuning & $P_3$ & $\sigma{=}3$ & bart & openai-bart & -6.91 & $<$0.001 & 0.1005 \\
+finetuning & $P_3$ & $\sigma{=}3$ & bart & phi4-modernbert & -4.02 & $<$0.001 & 0.1014 \\
+finetuning & $P_3$ & $\sigma{=}3$ & deepseek-modernbert & openai-modernbert & -6.74 & $<$0.001 & 0.1037 \\
+finetuning & $P_3$ & $\sigma{=}3$ & llama3-qlora & openai-modernbert & -6.64 & 0.0015 & 0.3058 \\
+finetuning & $P_3$ & $\sigma{=}3$ & modernbert & openai-bart & -6.15 & 0.0025 & 0.4784 \\
+finetuning & $P_3$ & $\sigma{=}3$ & bart & openai-llama3-qlora & -7.65 & 0.0032 & 0.5987 \\
+finetuning & $P_3$ & $\sigma{=}3$ & deepseek-modernbert & openai-llama3-qlora & -5.92 & 0.0033 & 0.6025 \\
+finetuning & $P_3$ & $\sigma{=}3$ & modernbert & openai-llama3-qlora & -6.88 & 0.0033 & 0.6025 \\
+finetuning & $P_3$ & $\sigma{=}3$ & openai-modernbert & phi4-modernbert & +4.46 & 0.0033 & 0.6025 \\
+finetuning & $P_3$ & $\sigma{=}3$ & deepseek-modernbert & openai-bart & -5.18 & 0.0045 & 0.7964 \\
+finetuning & $P_3$ & $\sigma{=}3$ & bart & deepseek-bart & -2.02 & 0.0593 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}3$ & bart & deepseek-llama3-qlora & -3.79 & 0.1069 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}3$ & bart & deepseek-modernbert & -1.73 & 0.0257 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}3$ & bart & gemini-modernbert-qlora & -7.21 & 0.0153 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}3$ & bart & llama3-qlora & -1.84 & 0.1399 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}3$ & bart & modernbert & -0.77 & 0.1782 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}3$ & deepseek-bart & deepseek-llama3-qlora & -1.78 & 0.3868 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}3$ & deepseek-bart & deepseek-modernbert & +0.28 & 0.8074 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}3$ & deepseek-bart & gemini-modernbert-qlora & -5.20 & 0.0222 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}3$ & deepseek-bart & llama3-qlora & +0.18 & 0.8611 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}3$ & deepseek-bart & modernbert & +1.25 & 0.3318 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}3$ & deepseek-bart & openai-llama3-qlora & -5.64 & 0.0094 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}3$ & deepseek-bart & phi4-modernbert & -2.01 & 0.0905 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}3$ & deepseek-llama3-qlora & deepseek-modernbert & +2.06 & 0.3865 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}3$ & deepseek-llama3-qlora & gemini-modernbert-qlora & -3.42 & 0.2338 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}3$ & deepseek-llama3-qlora & llama3-qlora & +1.95 & 0.4458 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}3$ & deepseek-llama3-qlora & modernbert & +3.03 & 0.1865 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}3$ & deepseek-llama3-qlora & openai-bart & -3.12 & 0.1354 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}3$ & deepseek-llama3-qlora & openai-llama3-qlora & -3.86 & 0.1837 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}3$ & deepseek-llama3-qlora & openai-modernbert & -4.69 & 0.0697 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}3$ & deepseek-llama3-qlora & phi4-modernbert & -0.23 & 0.8903 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}3$ & deepseek-modernbert & gemini-modernbert-qlora & -5.48 & 0.0294 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}3$ & deepseek-modernbert & llama3-qlora & -0.11 & 0.9341 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}3$ & deepseek-modernbert & modernbert & +0.97 & 0.0258 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}3$ & deepseek-modernbert & phi4-modernbert & -2.29 & 0.0468 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}3$ & gemini-modernbert-qlora & llama3-qlora & +5.38 & 0.0523 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}3$ & gemini-modernbert-qlora & modernbert & +6.45 & 0.0213 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}3$ & gemini-modernbert-qlora & openai-bart & +0.30 & 0.8248 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}3$ & gemini-modernbert-qlora & openai-llama3-qlora & -0.44 & 0.6464 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}3$ & gemini-modernbert-qlora & openai-modernbert & -1.26 & 0.4195 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}3$ & gemini-modernbert-qlora & phi4-modernbert & +3.19 & 0.1851 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}3$ & llama3-qlora & modernbert & +1.07 & 0.4454 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}3$ & llama3-qlora & openai-bart & -5.08 & 0.0085 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}3$ & llama3-qlora & openai-llama3-qlora & -5.81 & 0.0142 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}3$ & llama3-qlora & phi4-modernbert & -2.18 & 0.1099 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}3$ & modernbert & phi4-modernbert & -3.25 & 0.0075 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}3$ & openai-bart & openai-llama3-qlora & -0.74 & 0.5029 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}3$ & openai-bart & openai-modernbert & -1.56 & 0.0098 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}3$ & openai-bart & phi4-modernbert & +2.89 & 0.0223 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}3$ & openai-llama3-qlora & openai-modernbert & -0.83 & 0.4198 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}3$ & openai-llama3-qlora & phi4-modernbert & +3.63 & 0.0707 & 1.0000 \\
+\hline
+\end{tabular*}
+\end{table*}
+\newpage
+\begin{table*}[htbp]
+\centering
+\caption{Pairwise model comparisons via two-sided paired t-tests. P-values are adjusted using the Holm--Bonferroni correction ($\alpha = 0.05$). Bold rows are significant after correction. $\Delta\bar{F_1}$ is the mean fold-wise difference (Model A $-$ Model B). Group: finetuning, $P_3$, $\sigma{=}5$.}
+\label{tab:holm_ttests_finetuning_p3_alpha5}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}llllrrrl}
+\hline
+\textbf{Exp.} & \textbf{Problem} & \textbf{$\sigma$} & \textbf{Model A} & \textbf{Model B} & \textbf{$\Delta \bar{F_1}$ (\%)} & \textbf{$p_\text{raw}$} & \textbf{$p_\text{Holm}$} \\
+\hline
+\textbf{finetuning} & \textbf{$P_3$} & \textbf{$\sigma{=}5$} & \textbf{bart} & \textbf{openai-modernbert} & \textbf{-6.15} & \textbf{$<$0.001} & \textbf{0.0123} \\
+finetuning & $P_3$ & $\sigma{=}5$ & bart & openai-bart & -5.66 & $<$0.001 & 0.0706 \\
+finetuning & $P_3$ & $\sigma{=}5$ & deepseek-llama3-qlora & openai-modernbert & -7.24 & $<$0.001 & 0.1081 \\
+finetuning & $P_3$ & $\sigma{=}5$ & openai-llama3-qlora & openai-modernbert & -4.46 & $<$0.001 & 0.1332 \\
+finetuning & $P_3$ & $\sigma{=}5$ & llama3-qlora & openai-bart & -7.59 & 0.0012 & 0.2498 \\
+finetuning & $P_3$ & $\sigma{=}5$ & llama3-qlora & openai-modernbert & -8.08 & 0.0014 & 0.2911 \\
+finetuning & $P_3$ & $\sigma{=}5$ & deepseek-modernbert & openai-modernbert & -6.33 & 0.0018 & 0.3663 \\
+finetuning & $P_3$ & $\sigma{=}5$ & openai-bart & openai-llama3-qlora & +3.98 & 0.0022 & 0.4313 \\
+finetuning & $P_3$ & $\sigma{=}5$ & llama3-qlora & phi4-modernbert & -5.59 & 0.0022 & 0.4379 \\
+finetuning & $P_3$ & $\sigma{=}5$ & deepseek-llama3-qlora & openai-bart & -6.75 & 0.0024 & 0.4626 \\
+finetuning & $P_3$ & $\sigma{=}5$ & gemini-modernbert-qlora & llama3-qlora & +6.77 & 0.0029 & 0.5468 \\
+finetuning & $P_3$ & $\sigma{=}5$ & modernbert & openai-modernbert & -5.42 & 0.0034 & 0.6101 \\
+finetuning & $P_3$ & $\sigma{=}5$ & deepseek-modernbert & gemini-modernbert-qlora & -5.03 & 0.0039 & 0.6982 \\
+finetuning & $P_3$ & $\sigma{=}5$ & deepseek-bart & openai-modernbert & -3.94 & 0.0041 & 0.7261 \\
+finetuning & $P_3$ & $\sigma{=}5$ & deepseek-modernbert & phi4-modernbert & -3.85 & 0.0048 & 0.8454 \\
+finetuning & $P_3$ & $\sigma{=}5$ & llama3-qlora & openai-llama3-qlora & -3.61 & 0.0050 & 0.8701 \\
+finetuning & $P_3$ & $\sigma{=}5$ & bart & deepseek-bart & -2.21 & 0.0242 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}5$ & bart & deepseek-llama3-qlora & +1.09 & 0.2521 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}5$ & bart & deepseek-modernbert & +0.18 & 0.8608 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}5$ & bart & gemini-modernbert-qlora & -4.85 & 0.0071 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}5$ & bart & llama3-qlora & +1.92 & 0.0857 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}5$ & bart & modernbert & -0.73 & 0.3289 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}5$ & bart & openai-llama3-qlora & -1.69 & 0.0134 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}5$ & bart & phi4-modernbert & -3.66 & 0.0095 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}5$ & deepseek-bart & deepseek-llama3-qlora & +3.30 & 0.0304 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}5$ & deepseek-bart & deepseek-modernbert & +2.39 & 0.0075 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}5$ & deepseek-bart & gemini-modernbert-qlora & -2.64 & 0.0181 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}5$ & deepseek-bart & llama3-qlora & +4.13 & 0.0154 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}5$ & deepseek-bart & modernbert & +1.48 & 0.2692 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}5$ & deepseek-bart & openai-bart & -3.45 & 0.0218 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}5$ & deepseek-bart & openai-llama3-qlora & +0.52 & 0.3443 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}5$ & deepseek-bart & phi4-modernbert & -1.45 & 0.0214 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}5$ & deepseek-llama3-qlora & deepseek-modernbert & -0.91 & 0.4403 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}5$ & deepseek-llama3-qlora & gemini-modernbert-qlora & -5.94 & 0.0139 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}5$ & deepseek-llama3-qlora & llama3-qlora & +0.84 & 0.6403 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}5$ & deepseek-llama3-qlora & modernbert & -1.82 & 0.0974 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}5$ & deepseek-llama3-qlora & openai-llama3-qlora & -2.78 & 0.0637 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}5$ & deepseek-llama3-qlora & phi4-modernbert & -4.75 & 0.0238 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}5$ & deepseek-modernbert & llama3-qlora & +1.74 & 0.2801 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}5$ & deepseek-modernbert & modernbert & -0.91 & 0.5630 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}5$ & deepseek-modernbert & openai-bart & -5.85 & 0.0078 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}5$ & deepseek-modernbert & openai-llama3-qlora & -1.87 & 0.0860 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}5$ & gemini-modernbert-qlora & modernbert & +4.12 & 0.0332 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}5$ & gemini-modernbert-qlora & openai-bart & -0.81 & 0.5693 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}5$ & gemini-modernbert-qlora & openai-llama3-qlora & +3.16 & 0.0179 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}5$ & gemini-modernbert-qlora & openai-modernbert & -1.30 & 0.3019 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}5$ & gemini-modernbert-qlora & phi4-modernbert & +1.19 & 0.1779 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}5$ & llama3-qlora & modernbert & -2.65 & 0.1107 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}5$ & modernbert & openai-bart & -4.93 & 0.0067 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}5$ & modernbert & openai-llama3-qlora & -0.96 & 0.4080 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}5$ & modernbert & phi4-modernbert & -2.94 & 0.1028 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}5$ & openai-bart & openai-modernbert & -0.49 & 0.2559 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}5$ & openai-bart & phi4-modernbert & +2.00 & 0.1104 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}5$ & openai-llama3-qlora & phi4-modernbert & -1.98 & 0.0114 & 1.0000 \\
+finetuning & $P_3$ & $\sigma{=}5$ & openai-modernbert & phi4-modernbert & +2.49 & 0.0385 & 1.0000 \\
+\hline
+\end{tabular*}
+\end{table*}
+\newpage
+\begin{table*}[htbp]
+\centering
+\caption{Pairwise model comparisons via two-sided paired t-tests. P-values are adjusted using the Holm--Bonferroni correction ($\alpha = 0.05$). Bold rows are significant after correction. $\Delta\bar{F_1}$ is the mean fold-wise difference (Model A $-$ Model B). Group: finetuning, $P_5$, $\sigma{=}3$.}
+\label{tab:holm_ttests_finetuning_p5_alpha3}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}llllrrrl}
+\hline
+\textbf{Exp.} & \textbf{Problem} & \textbf{$\sigma$} & \textbf{Model A} & \textbf{Model B} & \textbf{$\Delta \bar{F_1}$ (\%)} & \textbf{$p_\text{raw}$} & \textbf{$p_\text{Holm}$} \\
+\hline
+\textbf{finetuning} & \textbf{$P_5$} & \textbf{$\sigma{=}3$} & \textbf{bart} & \textbf{openai-bart} & \textbf{-8.04} & \textbf{$<$0.001} & \textbf{0.0308} \\
+finetuning & $P_5$ & $\sigma{=}3$ & bart & openai-llama3-qlora & -8.87 & $<$0.001 & 0.1046 \\
+finetuning & $P_5$ & $\sigma{=}3$ & deepseek-modernbert & gemini-modernbert-qlora & -6.40 & 0.0011 & 0.2304 \\
+finetuning & $P_5$ & $\sigma{=}3$ & bart & gemini-modernbert-qlora & -8.83 & 0.0011 & 0.2343 \\
+finetuning & $P_5$ & $\sigma{=}3$ & bart & phi4-modernbert & -5.11 & 0.0014 & 0.2851 \\
+finetuning & $P_5$ & $\sigma{=}3$ & modernbert & openai-modernbert & -6.07 & 0.0017 & 0.3361 \\
+finetuning & $P_5$ & $\sigma{=}3$ & gemini-modernbert-qlora & modernbert & +5.72 & 0.0024 & 0.4627 \\
+finetuning & $P_5$ & $\sigma{=}3$ & modernbert & openai-llama3-qlora & -5.75 & 0.0025 & 0.4784 \\
+finetuning & $P_5$ & $\sigma{=}3$ & bart & openai-modernbert & -9.19 & 0.0028 & 0.5403 \\
+finetuning & $P_5$ & $\sigma{=}3$ & openai-bart & phi4-modernbert & +2.93 & 0.0029 & 0.5468 \\
+finetuning & $P_5$ & $\sigma{=}3$ & modernbert & openai-bart & -4.92 & 0.0040 & 0.7155 \\
+finetuning & $P_5$ & $\sigma{=}3$ & deepseek-bart & gemini-modernbert-qlora & -4.72 & 0.0055 & 0.9495 \\
+finetuning & $P_5$ & $\sigma{=}3$ & bart & deepseek-bart & -4.11 & 0.0905 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}3$ & bart & deepseek-llama3-qlora & -3.01 & 0.2311 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}3$ & bart & deepseek-modernbert & -2.43 & 0.1174 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}3$ & bart & llama3-qlora & -1.42 & 0.3692 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}3$ & bart & modernbert & -3.12 & 0.0496 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}3$ & deepseek-bart & deepseek-llama3-qlora & +1.11 & 0.5054 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}3$ & deepseek-bart & deepseek-modernbert & +1.68 & 0.1714 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}3$ & deepseek-bart & llama3-qlora & +2.70 & 0.2998 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}3$ & deepseek-bart & modernbert & +1.00 & 0.5218 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}3$ & deepseek-bart & openai-bart & -3.92 & 0.0925 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}3$ & deepseek-bart & openai-llama3-qlora & -4.75 & 0.0826 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}3$ & deepseek-bart & openai-modernbert & -5.08 & 0.0747 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}3$ & deepseek-bart & phi4-modernbert & -1.00 & 0.5251 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}3$ & deepseek-llama3-qlora & deepseek-modernbert & +0.58 & 0.6748 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}3$ & deepseek-llama3-qlora & gemini-modernbert-qlora & -5.83 & 0.0213 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}3$ & deepseek-llama3-qlora & llama3-qlora & +1.59 & 0.4959 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}3$ & deepseek-llama3-qlora & modernbert & -0.11 & 0.9418 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}3$ & deepseek-llama3-qlora & openai-bart & -5.03 & 0.0564 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}3$ & deepseek-llama3-qlora & openai-llama3-qlora & -5.86 & 0.0356 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}3$ & deepseek-llama3-qlora & openai-modernbert & -6.18 & 0.0345 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}3$ & deepseek-llama3-qlora & phi4-modernbert & -2.11 & 0.3191 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}3$ & deepseek-modernbert & llama3-qlora & +1.01 & 0.6038 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}3$ & deepseek-modernbert & modernbert & -0.68 & 0.5958 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}3$ & deepseek-modernbert & openai-bart & -5.61 & 0.0108 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}3$ & deepseek-modernbert & openai-llama3-qlora & -6.43 & 0.0128 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}3$ & deepseek-modernbert & openai-modernbert & -6.76 & 0.0230 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}3$ & deepseek-modernbert & phi4-modernbert & -2.68 & 0.0737 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}3$ & gemini-modernbert-qlora & llama3-qlora & +7.42 & 0.0081 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}3$ & gemini-modernbert-qlora & openai-bart & +0.80 & 0.5080 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}3$ & gemini-modernbert-qlora & openai-llama3-qlora & -0.03 & 0.9830 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}3$ & gemini-modernbert-qlora & openai-modernbert & -0.36 & 0.8304 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}3$ & gemini-modernbert-qlora & phi4-modernbert & +3.72 & 0.0071 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}3$ & llama3-qlora & modernbert & -1.70 & 0.2722 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}3$ & llama3-qlora & openai-bart & -6.62 & 0.0142 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}3$ & llama3-qlora & openai-llama3-qlora & -7.45 & 0.0083 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}3$ & llama3-qlora & openai-modernbert & -7.77 & 0.0107 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}3$ & llama3-qlora & phi4-modernbert & -3.69 & 0.0783 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}3$ & modernbert & phi4-modernbert & -2.00 & 0.0450 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}3$ & openai-bart & openai-llama3-qlora & -0.83 & 0.1275 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}3$ & openai-bart & openai-modernbert & -1.15 & 0.2934 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}3$ & openai-llama3-qlora & openai-modernbert & -0.32 & 0.6802 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}3$ & openai-llama3-qlora & phi4-modernbert & +3.75 & 0.0094 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}3$ & openai-modernbert & phi4-modernbert & +4.08 & 0.0178 & 1.0000 \\
+\hline
+\end{tabular*}
+\end{table*}
+\newpage
+\begin{table*}[htbp]
+\centering
+\caption{Pairwise model comparisons via two-sided paired t-tests. P-values are adjusted using the Holm--Bonferroni correction ($\alpha = 0.05$). Bold rows are significant after correction. $\Delta\bar{F_1}$ is the mean fold-wise difference (Model A $-$ Model B). Group: finetuning, $P_5$, $\sigma{=}5$.}
+\label{tab:holm_ttests_finetuning_p5_alpha5}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}llllrrrl}
+\hline
+\textbf{Exp.} & \textbf{Problem} & \textbf{$\sigma$} & \textbf{Model A} & \textbf{Model B} & \textbf{$\Delta \bar{F_1}$ (\%)} & \textbf{$p_\text{raw}$} & \textbf{$p_\text{Holm}$} \\
+\hline
+finetuning & $P_5$ & $\sigma{=}5$ & deepseek-bart & deepseek-modernbert & +15.28 & 0.0019 & 0.3737 \\
+finetuning & $P_5$ & $\sigma{=}5$ & deepseek-llama3-qlora & openai-modernbert & -14.66 & 0.0022 & 0.4379 \\
+finetuning & $P_5$ & $\sigma{=}5$ & deepseek-llama3-qlora & gemini-modernbert-qlora & -11.61 & 0.0026 & 0.5041 \\
+finetuning & $P_5$ & $\sigma{=}5$ & bart & deepseek-llama3-qlora & +10.34 & 0.0029 & 0.5468 \\
+finetuning & $P_5$ & $\sigma{=}5$ & deepseek-bart & deepseek-llama3-qlora & +13.24 & 0.0045 & 0.7964 \\
+finetuning & $P_5$ & $\sigma{=}5$ & bart & deepseek-bart & -2.90 & 0.1458 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}5$ & bart & deepseek-modernbert & +12.38 & 0.0114 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}5$ & bart & gemini-modernbert-qlora & -1.27 & 0.5341 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}5$ & bart & llama3-qlora & +11.27 & 0.0263 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}5$ & bart & modernbert & +4.46 & 0.0116 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}5$ & bart & openai-bart & -2.26 & 0.2548 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}5$ & bart & openai-llama3-qlora & -1.25 & 0.4149 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}5$ & bart & openai-modernbert & -4.32 & 0.1488 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}5$ & bart & phi4-modernbert & +1.09 & 0.7254 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}5$ & deepseek-bart & gemini-modernbert-qlora & +1.63 & 0.3386 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}5$ & deepseek-bart & llama3-qlora & +14.18 & 0.0152 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}5$ & deepseek-bart & modernbert & +7.36 & 0.0109 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}5$ & deepseek-bart & openai-bart & +0.65 & 0.8463 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}5$ & deepseek-bart & openai-llama3-qlora & +1.66 & 0.5020 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}5$ & deepseek-bart & openai-modernbert & -1.42 & 0.7157 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}5$ & deepseek-bart & phi4-modernbert & +3.99 & 0.2918 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}5$ & deepseek-llama3-qlora & deepseek-modernbert & +2.04 & 0.5473 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}5$ & deepseek-llama3-qlora & llama3-qlora & +0.93 & 0.6568 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}5$ & deepseek-llama3-qlora & modernbert & -5.88 & 0.0839 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}5$ & deepseek-llama3-qlora & openai-bart & -12.60 & 0.0091 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}5$ & deepseek-llama3-qlora & openai-llama3-qlora & -11.59 & 0.0076 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}5$ & deepseek-llama3-qlora & phi4-modernbert & -9.25 & 0.0252 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}5$ & deepseek-modernbert & gemini-modernbert-qlora & -13.65 & 0.0092 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}5$ & deepseek-modernbert & llama3-qlora & -1.10 & 0.7494 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}5$ & deepseek-modernbert & modernbert & -7.92 & 0.0516 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}5$ & deepseek-modernbert & openai-bart & -14.63 & 0.0276 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}5$ & deepseek-modernbert & openai-llama3-qlora & -13.62 & 0.0196 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}5$ & deepseek-modernbert & openai-modernbert & -16.70 & 0.0198 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}5$ & deepseek-modernbert & phi4-modernbert & -11.29 & 0.0269 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}5$ & gemini-modernbert-qlora & llama3-qlora & +12.55 & 0.0115 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}5$ & gemini-modernbert-qlora & modernbert & +5.73 & 0.0804 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}5$ & gemini-modernbert-qlora & openai-bart & -0.98 & 0.7834 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}5$ & gemini-modernbert-qlora & openai-llama3-qlora & +0.03 & 0.9930 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}5$ & gemini-modernbert-qlora & openai-modernbert & -3.05 & 0.4442 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}5$ & gemini-modernbert-qlora & phi4-modernbert & +2.36 & 0.5746 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}5$ & llama3-qlora & modernbert & -6.82 & 0.1775 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}5$ & llama3-qlora & openai-bart & -13.53 & 0.0391 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}5$ & llama3-qlora & openai-llama3-qlora & -12.52 & 0.0386 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}5$ & llama3-qlora & openai-modernbert & -15.60 & 0.0113 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}5$ & llama3-qlora & phi4-modernbert & -10.19 & 0.0372 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}5$ & modernbert & openai-bart & -6.71 & 0.0217 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}5$ & modernbert & openai-llama3-qlora & -5.70 & 0.0149 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}5$ & modernbert & openai-modernbert & -8.78 & 0.0461 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}5$ & modernbert & phi4-modernbert & -3.37 & 0.3606 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}5$ & openai-bart & openai-llama3-qlora & +1.01 & 0.4920 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}5$ & openai-bart & openai-modernbert & -2.07 & 0.3631 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}5$ & openai-bart & phi4-modernbert & +3.34 & 0.3744 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}5$ & openai-llama3-qlora & openai-modernbert & -3.08 & 0.2053 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}5$ & openai-llama3-qlora & phi4-modernbert & +2.33 & 0.4166 & 1.0000 \\
+finetuning & $P_5$ & $\sigma{=}5$ & openai-modernbert & phi4-modernbert & +5.41 & 0.0721 & 1.0000 \\
+\hline
+\end{tabular*}
+\end{table*}
