@@ -286,11 +286,3 @@ python scripts/inference.py \
 
 Contributions are welcome! Please open an issue or submit a pull request. For major changes, please open an issue first to discuss what you would like to change.
 
-
----
-
-## License
-
-[MIT License](LICENSE)
-
----
