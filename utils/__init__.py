@@ -1,5 +1,12 @@
 from utils.data_loader import SentimentDataset, ImageDataset, data_loader, load_dataframe, load_experiment_data
 from utils.other_utils import load_config
+from utils.visualization import (
+    scatter_by_model,
+    scatter_grid,
+    comprehensive_errorbar,
+    confidence_band_plot,
+    bar_comparison,
+)
 from utils.preprocessing import (
     SENTIMENT_SCHEMAS,
     ia_calculation,
