@@ -1,4 +1,4 @@
-# Do Multimodal LLMs See Sentiment?
+# Multimodal LLMs See Sentiment
 
 ![PyTorch](https://img.shields.io/badge/PyTorch-%23EE4C2C.svg?style=for-the-badge&logo=PyTorch&logoColor=white)
 ![Transformers](https://img.shields.io/badge/Transformers-%23FF6F00.svg?style=for-the-badge&logo=huggingface&logoColor=white)
@@ -66,7 +66,8 @@ graph TD
         G1["• GPT (OS)"]:::mllm
         G2["• GPT (OAI)"]:::mllm
         G3["• DeepSeek"]:::mllm
-        G4["• phi-4"]:::mllm
+        G4["• Phi-4"]:::mllm
+        G5["• Gemma-4"]:::mllm
     end
 
     subgraph Key_Pretrained [Pre-trained text LLMs]
@@ -277,8 +278,14 @@ python scripts/inference.py \
 
 ## Notebooks
 
-- Prototyping, analysis, and visualization notebooks are in `notebooks/`.
-- Example: `plot-results.ipynb`, `fine-tuning-llm-qlora.ipynb`, `vader.ipynb`, etc.
+Notebooks are reserved exclusively for **analysis and visualization**. All training and inference code lives in `scripts/`.
+
+| Notebook | Purpose |
+|---|---|
+| `plot-results.ipynb` | F1-score comparisons across all models and problem setups |
+| `eda-class-distribution.ipynb` | Class-distribution exploratory analysis per dataset variant |
+| `interval_confidence.ipynb` | Confidence-interval analysis |
+| `fine-tuning-expeirments.ipynb` | Training-curve visualizations for fine-tuning runs |
 
 ---
 
