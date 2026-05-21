@@ -10,3 +10,4 @@ diagrams/
 *.zip
 venv/
 envmodernbert
+reports/attention_flow

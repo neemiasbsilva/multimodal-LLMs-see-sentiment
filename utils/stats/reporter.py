@@ -15,10 +15,46 @@ _ALPHA_LABELS = {
     "alpha5": r"$\sigma{=}5$",
 }
 
+# Display name for each known MLLM caption source.
+# Models with no recognised caption prefix belong to MiniGPT-4 (Open Source).
+_CAPTION_DISPLAY = {
+    "openai":   "GPT (OAI)",
+    "deepseek": "DeepSeek",
+    "gemini":   "Gemini",
+    "gemma4":   "Gemma4",
+    "phi4":     "Phi-4",
+}
+
+# Display name for each known text classifier.
+_CLASSIFIER_DISPLAY = {
+    "bart":       "BART",
+    "modernbert": "MBERT",
+    "llama3":     "LLaMA",
+}
+
 
 def _fmt_model(name: str) -> str:
-    """Light formatting so model names read better in TeX."""
-    return name.replace("_", r"\_").replace("&", r"\&")
+    """Convert a raw model slug to a human-readable display name.
+
+    Format: ``{MLLM} + {Classifier}``
+
+    Models whose first token is not a known MLLM caption source are treated as
+    belonging to MiniGPT-4 (Open Source) and labelled ``GPT (OS)``.
+    """
+    parts = name.split("-")
+    if parts[0] in _CAPTION_DISPLAY:
+        mllm = _CAPTION_DISPLAY[parts[0]]
+        classifier_parts = parts[1:]
+    else:
+        mllm = "GPT (OS)"
+        classifier_parts = parts
+
+    # Walk the classifier tokens and pick the first recognised keyword.
+    classifier = next(
+        (_CLASSIFIER_DISPLAY[p] for p in classifier_parts if p in _CLASSIFIER_DISPLAY),
+        "-".join(classifier_parts),  # fallback: use the raw remainder
+    )
+    return f"{mllm} + {classifier}"
 
 
 def results_to_dataframe(test_results: list) -> pd.DataFrame:
