@@ -19,14 +19,13 @@ class SentimentDataset(Dataset):
     
     def __getitem__(self, index):
         text = str(self.data.text[index])
-        inputs = self.tokenizer.encode_plus(
+        inputs = self.tokenizer(
             text,
-            None,
             add_special_tokens=True,
             max_length=self.max_len,
             padding='max_length',
             truncation=True,
-            return_token_type_ids = True,
+            return_token_type_ids=True,
             return_tensors='pt'
         )
         ids = inputs["input_ids"].flatten()
