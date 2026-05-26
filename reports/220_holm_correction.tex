@@ -1,16 +1,3 @@
-%% ======================================================================
-%% Reviewer Response -- Additional MLLM Benchmark Comparison
-%% Addresses reviewer concern: "Limited Benchmark Comparisons"
-%% ======================================================================
-
-%% ----------------------------------------------------------
-%% TABLE: Extended MLLM benchmark
-%% Compares Task 1 (direct classification) and the MBERT-based
-%% description-mediated pipeline (Task 2a / 2b) for three new
-%% multimodal models (Gemini, Phi-4, Gemma-4-E4B) against the
-%% best-performing existing model (GPT-4o mini) reported in the paper.
-%% ----------------------------------------------------------
-
 \begin{table*}[!htb]
 \begin{adjustwidth}{-2.25in}{0in}
 \footnotesize
@@ -111,47 +98,3 @@ $\langle\sigma_5,P_3\rangle$
 \end{adjustwidth}
 \end{table*}
 
-
-%% ======================================================================
-%% REVIEWER RESPONSE LETTER
-%% ======================================================================
-
-\bigskip
-\hrule
-\bigskip
-
-\noindent\textbf{Response to Reviewer Comment -- Limited Benchmark Comparisons}
-
-\medskip
-
-We thank the reviewer for this suggestion and have extended the evaluation to include
-three additional state-of-the-art MLLMs spanning complementary paradigms:
-\textbf{Gemini} (Google, proprietary API), \textbf{Phi-4-reasoning-vision-15B}
-(Microsoft, open-weights decoder), and \textbf{Gemma-4-E4B-it}
-(Google DeepMind, open-weights instruction-tuned).
-Results are reported in Table~\ref{tab:extendedMLLMbenchmark}. On Task~1 (direct
-classification), Gemini achieves the highest $F$-scores among all models tested
-($51.3$--$88.2$\%), while Phi-4 and Gemma-4-E4B match GPT-4o mini under high-agreement
-settings but lag behind on the harder low-agreement, five-class configuration
-($42.2$\% and $46.8$\%, respectively, vs.\ $44.5$\% for GPT-4o mini).
-
-Extending the evaluation to Task~$2_b$ (fine-tuned ModernBERT on MLLM-generated
-descriptions) reveals that the description-mediated pipeline consistently outperforms
-direct Task~1 classification for every newly added model:
-absolute gains of $+2.9$--$+6.5$ pp for Gemini and $+0.9$--$+11.9$ pp for Phi-4.
-Although GPT-4o mini + MBERT retains the highest absolute scores ($58.4$--$95.8$\%),
-the margins over Gemini + MBERT and Phi-4 + MBERT are at most $3.5$ pp across all
-settings, indicating that the performance advantage is structural --- attributable to
-the pipeline architecture --- rather than to any particular MLLM choice.
-
-Regarding the comparison with fusion-based multimodal models, we acknowledge that
-our pipeline differs architecturally from early/late feature fusion approaches.
-We clarify that the description-mediated design constitutes a form of
-\emph{language-bridged modality fusion}: the MLLM externalises visual sentiment cues
-as natural language, which the LLM then classifies, a strategy that is both more
-interpretable and more composable than black-box feature concatenation.
-We have added a paragraph to the Related Work (Section~2) that explicitly situates
-our approach relative to representative fusion-based methods
-\cite{PANDEY2024111206,das2023image,zhu2022multimodal} and discusses the
-structural distinctions and the empirical advantages observed across our extended
-set of models.
