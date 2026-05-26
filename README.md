@@ -151,7 +151,7 @@ $ pip install .
 ## Project Structure
 
 ```
-PerceptSent-LLM-approach/
+multimodal-LLMs-see-sentiment/
 ├── data/                 # Datasets and model outputs
 ├── models/               # Model architectures and utilities
 ├── utils/                # Helper functions and tools
