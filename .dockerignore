@@ -1,0 +1,26 @@
+# Keep the image small: exclude data, checkpoints, caches and VCS metadata.
+.git/
+.github/
+__pycache__/
+**/__pycache__/
+*.pyc
+
+# Large artifacts (mirrors .gitignore)
+data/
+checkpoints/
+reports/
+diagrams/
+envmodernbert/
+envmoderbert/
+venv/
+*.pt
+*.bin
+*.safetensors
+*.gz
+*.zip
+
+# Notebooks and local env / secrets
+notebooks/
+*.ipynb
+.env
+.venv/
