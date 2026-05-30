@@ -1,6 +1,9 @@
-data/
+# Track the data/ and checkpoints/ folders (via .gitkeep) but ignore their contents.
+data/*
+!data/.gitkeep
+checkpoints/*
+!checkpoints/.gitkeep
 envmoderbert/
-checkpoints/
 __pycache__
 *.gz
 *pt
@@ -11,3 +14,4 @@ diagrams/
 venv/
 envmodernbert
 reports/attention_flow
+.env

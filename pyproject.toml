@@ -75,6 +75,9 @@ dependencies = [
     "urllib3>=2.6.3",
     "xxhash==3.5.0",
     "yarl==1.20.1",
+    "openai==1.99.1",
+    "google-genai==1.28.0",
+    "python-dotenv==1.1.1",
 ]
 
 [[tool.uv.index]]

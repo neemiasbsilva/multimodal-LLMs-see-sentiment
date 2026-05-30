@@ -65,3 +65,8 @@ tzdata==2025.2
 urllib3==2.4.0
 xxhash==3.5.0
 yarl==1.20.1
+# MLLM API inference (inference/ scripts). DeepSeek-VL2 additionally needs the
+# non-PyPI `deepseek_vl2` package: pip install git+https://github.com/deepseek-ai/DeepSeek-VL2.git
+openai==1.99.1
+google-genai==1.28.0
+python-dotenv==1.1.1
