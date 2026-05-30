@@ -140,10 +140,10 @@ $ gunzip checkpoints/*.pt.gz
 
 # The text dataset transcript can be find here: https://drive.google.com/drive/folders/1LQAOGI2ojzE5ykjr5WbtDJFM1PQWF9On?usp=share_link
 
-# Install dependencies (Python >=3.10 required)
+# Install dependencies with uv (recommended; Python >=3.10)
+$ uv sync
+# or with pip
 $ pip install -r requirements.txt
-# or, for modern Python projects:
-$ pip install .
 ```
 
 ---
@@ -268,6 +268,81 @@ python scripts/inference.py \
 
 ---
 
+## Reproducibility: MLLM Inference (Task 1 & Task 2)
+
+The [`inference/`](inference/) directory contains runnable scripts that reproduce the MLLM stage
+of the paper for three model families — **OpenAI GPT-4o mini**, **Google Gemini**, and
+**DeepSeek-VL2** — for both tasks:
+
+- **Task 1** — direct sentiment classification from the image (`*_task1_classify.py`) → `[id, sentiment, raw_response]`
+- **Task 2** — image description for the description-mediated pipeline (`*_task2_caption.py`) → `[id, text]`
+
+The paper's best configuration is **GPT-4o mini + fine-tuned ModernBERT (= MLLMsent)**.
+
+### 1. Configure API keys
+
+```bash
+cp .env.example .env
+# edit .env and set OPENAI_API_KEY / GEMINI_API_KEY (and optionally the model ids)
+```
+
+The scripts load `.env` automatically via `python-dotenv`; keys are never hardcoded. The OpenAI
+and Gemini scripts are API calls (no GPU required). DeepSeek-VL2 runs locally and additionally
+needs the non-PyPI package:
+
+```bash
+pip install git+https://github.com/deepseek-ai/DeepSeek-VL2.git
+```
+
+### 2. Task 1 — direct classification
+
+```bash
+python inference/openai_task1_classify.py \
+    --dataset_csv data/gpt4-openai-classify/percept_dataset_alpha3_p3.csv \
+    --save_path data/gpt4-openai-only --alpha_version 3 --p_version p3
+# Gemini: inference/gemini_task1_classify.py   DeepSeek: inference/deepseek_task1_classify.py
+```
+
+Add `--limit 3` for a quick smoke test and `--resume` to continue an interrupted run.
+
+### 3. Task 2 → MLLMsent (descriptions → fine-tuned ModernBERT)
+
+```bash
+# (a) Generate descriptions from images
+python inference/openai_task2_caption.py \
+    --dataset_csv data/gpt4-openai-classify/percept_dataset_alpha3_p3.csv \
+    --save_path data/gpt4-openai-classify
+# -> data/gpt4-openai-classify/descriptions.csv  [id, text]
+
+# (b) Classify the descriptions with the fine-tuned ModernBERT classifier
+python scripts/inference.py \
+    --model_name modern-bert \
+    --checkpoint_path checkpoints/best_checkpoint_gpt4-openai-classify_modern-bert_p3_sigma3_finetuned.pt \
+    --model_path answerdotai/ModernBERT-large \
+    --input_file data/gpt4-openai-classify/descriptions.csv \
+    --output_file predictions.csv \
+    --num_classes 3
+```
+
+The `descriptions.csv` provides the `text` column consumed by `scripts/inference.py`; merge it with
+ground-truth labels (see `gpt4_experiment.py`) to rebuild the per-`⟨σ, P⟩` training CSVs.
+
+### Docker
+
+A ready-to-use image — provisioned with `uv` and bundling **no weights, keys, or datasets** — is
+published to GHCR on every GitHub Release. It runs no script by default; it just gives you the
+environment:
+
+```bash
+docker pull ghcr.io/neemiasbsilva/multimodal-llms-see-sentiment:latest
+docker run --rm -it --gpus all --env-file .env \
+    ghcr.io/neemiasbsilva/multimodal-llms-see-sentiment:latest
+# then, inside the container:
+python inference/openai_task1_classify.py --help
+```
+
+---
+
 ## Data Structure
 
 - `data/` contains all datasets and model outputs, including:
@@ -289,7 +364,10 @@ Notebooks are reserved exclusively for **analysis and visualization**. All train
 
 ---
 
-## Contributing
+## Citation 
+```
+TODO
+```
 
-Contributions are welcome! Please open an issue or submit a pull request. For major changes, please open an issue first to discuss what you would like to change.
+---
 
