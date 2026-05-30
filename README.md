@@ -300,21 +300,23 @@ pip install git+https://github.com/deepseek-ai/DeepSeek-VL2.git
 python inference/openai_task1_classify.py \
     --dataset_csv data/gpt4-openai-classify/percept_dataset_alpha3_p3.csv \
     --save_path data/gpt4-openai-only --alpha_version 3 --p_version p3
-# Gemini: inference/gemini_task1_classify.py   DeepSeek: inference/deepseek_task1_classify.py
 ```
-
-Add `--limit 3` for a quick smoke test and `--resume` to continue an interrupted run.
+**Note**: 
+- Gemini: inference/gemini_task1_classify.py 
+- DeepSeek: inference/deepseek_task1_classify.py
 
 ### 3. Task 2 → MLLMsent (descriptions → fine-tuned ModernBERT)
 
+**Generate descriptions from images**
 ```bash
-# (a) Generate descriptions from images
+# 
 python inference/openai_task2_caption.py \
     --dataset_csv data/gpt4-openai-classify/percept_dataset_alpha3_p3.csv \
     --save_path data/gpt4-openai-classify
-# -> data/gpt4-openai-classify/descriptions.csv  [id, text]
+```
 
-# (b) Classify the descriptions with the fine-tuned ModernBERT classifier
+**Classify the descriptions with the fine-tuned ModernBERT classifier**
+```bash
 python scripts/inference.py \
     --model_name modern-bert \
     --checkpoint_path checkpoints/best_checkpoint_gpt4-openai-classify_modern-bert_p3_sigma3_finetuned.pt \
