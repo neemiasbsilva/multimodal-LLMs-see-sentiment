@@ -1,100 +1,59 @@
 # Multimodal LLMs See Sentiment
 
-![PyTorch](https://img.shields.io/badge/PyTorch-%23EE4C2C.svg?style=for-the-badge&logo=PyTorch&logoColor=white)
-![Transformers](https://img.shields.io/badge/Transformers-%23FF6F00.svg?style=for-the-badge&logo=huggingface&logoColor=white)
-![Hugging Face](https://img.shields.io/badge/Hugging%20Face-%23FF6F00.svg?style=for-the-badge&logo=huggingface&logoColor=white)
-![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
-![CUDA](https://img.shields.io/badge/CUDA-%23076FC1.svg?style=for-the-badge&logo=nvidia&logoColor=white)
-![scikit-learn](https://img.shields.io/badge/scikit--learn-%23F7931E.svg?style=for-the-badge&logo=scikit-learn&logoColor=white)
-![Pandas](https://img.shields.io/badge/pandas-%23150458.svg?style=for-the-badge&logo=pandas&logoColor=white)
-![NumPy](https://img.shields.io/badge/numpy-%23013243.svg?style=for-the-badge&logo=numpy&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.10-3776AB?logo=python&logoColor=white)
+![uv](https://img.shields.io/badge/uv-locked-DE5FE9?logo=uv&logoColor=white)
+![NumPy](https://img.shields.io/badge/NumPy-2.2-013243?logo=numpy&logoColor=white)
+![pandas](https://img.shields.io/badge/pandas-2.3-150458?logo=pandas&logoColor=white)
+![scikit-learn](https://img.shields.io/badge/scikit--learn-1.7-F7931E?logo=scikitlearn&logoColor=white)
+![PyTorch](https://img.shields.io/badge/PyTorch-2.5-EE4C2C?logo=pytorch&logoColor=white)
+![Transformers](https://img.shields.io/badge/Transformers-5.7-FFD21E?logo=huggingface&logoColor=black)
+![CUDA](https://img.shields.io/badge/CUDA-12.1-76B900?logo=nvidia&logoColor=white)
+
+**MLLMsent** is a research framework for investigating sentiment reasoning in multimodal
+large language models. It provides end-to-end tools for analyzing how images communicate
+sentiment through complex, scene-level semantics.
+
+## Contents
+
+- [Overview](#overview)
+  - [Key Features](#key-features)
+- [Model Weights and Pre-trained Models](#model-weights-and-pre-trained-models)
+- [Dataset Resources](#dataset-resources)
+- [Quickstart](#quickstart)
+- [Project Structure](#project-structure)
+- [Configuration](#configuration)
+- [Training and Evaluation](#training-and-evaluation)
+  - [Training](#training)
+  - [Evaluation](#evaluation)
+  - [Running Experiment Scripts](#running-experiment-scripts)
+- [Inference](#inference)
+- [Reproducing MLLM Inference](#reproducing-mllm-inference)
+  - [Configure API keys](#configure-api-keys)
+  - [Task 1: Direct classification](#task-1-direct-classification)
+  - [Task 2: MLLMsent pipeline](#task-2-mllmsent-pipeline)
+  - [Docker](#docker)
+- [Data Structure](#data-structure)
+- [Notebooks](#notebooks)
+- [Citation](#citation)
 
 ---
 
 ## Overview
-<!-- <p align="center">
-<img src="reports/mllm-framework.png" width="40%" height="40%">
-<h6 align="center"> Architecture diagram of MLLMsent, our proposed Multimodal Large Language Model
-framework for sentiment analysis..</h6> -->
-```mermaid
-graph TD
-    %% Define main node styles matching the image colors
-    classDef prompt fill:#cceeff,stroke:#333,stroke-width:2px;
-    classDef image fill:#f9f9f9,stroke:#333,stroke-width:1px;
-    classDef mllm fill:#d9ead3,stroke:#333,stroke-width:1px;
-    classDef defaultbox fill:#ffffff,stroke:#333,stroke-width:1px;
-    classDef pretrained fill:#f4cccc,stroke:#333,stroke-width:1px;
-    classDef finetuned fill:#cfe2f3,stroke:#333,stroke-width:1px;
 
-    %% Nodes
-    Prompt[Prompt]:::prompt
-    InputImage[Input Image]:::image
-    MLLM(Multimodal Large Language Model <br/> MLLM):::mllm
-    
-    IC[Image Classification]:::defaultbox
-    SP("Sentiment Polarity: ⟨σ_I, P_C⟩"):::defaultbox
-
-    %% Connections for main paths
-    Prompt --> MLLM
-    InputImage --> MLLM
-    
-    %% Task 1
-    MLLM -- "Task 1" --> IC
-    IC --> SP
-
-    %% Task 2 Conceptual visual grouping
-    subgraph Task2 ["Visual Reasoning (Task 2)"]
-        direction TB
-        ID[Image Description]:::defaultbox
-        PTL[Pre-trained text LLM]:::pretrained
-        FTL[Fine-tuned text LLM]:::finetuned
-        TC[Text Classification]:::defaultbox
-        
-        ID --> PTL
-        ID --> FTL
-        PTL --> TC
-        FTL --> TC
-    end
-
-    MLLM --> ID
-    TC -- "Task 2a" --> SP
-    TC -- "Task 2b" --> SP
-
-    %% Model Keys and Legends (Rendered as separate reference blocks)
-    subgraph Key_MLLM [MLLM Models]
-        direction TB
-        G1["• GPT (OS)"]:::mllm
-        G2["• GPT (OAI)"]:::mllm
-        G3["• DeepSeek"]:::mllm
-        G4["• Phi-4"]:::mllm
-        G5["• Gemma-4"]:::mllm
-    end
-
-    subgraph Key_Pretrained [Pre-trained text LLMs]
-        direction TB
-        R1["• BART"]:::pretrained
-        R2["• MBERT"]:::pretrained
-        R3["• LLaMA"]:::pretrained
-    end
-
-    subgraph Key_Finetuned [Fine-tuned text LLMs]
-        direction TB
-        B1["• BART"]:::finetuned
-        B2["• MBERT"]:::finetuned
-        B3["• LLaMA"]:::finetuned
-    end
-```
-
-**MLLMsent** is a research framework for investigating sentiment reasoning in MultiModal Large Language Models (MLLMs). It provides end-to-end tools for sentiment analysis from visual content, focusing on how images communicate sentiment through complex, scene-level semantics.
+The framework supports three complementary sentiment-analysis settings:
 
 - **Direct sentiment classification** from images using MLLMs
-- **Sentiment analysis on MLLM-generated captions** using pre-trained LLMs (with only the final classification layer trained)
+- **Sentiment analysis on MLLM-generated captions** using pre-trained LLMs (with only the
+  final classification layer trained)
 - **Full fine-tuning** of LLMs on sentiment-labeled captions
 
-The framework supports multiple transformer architectures (ModernBERT, BART, LLaMA, DistilBERT, Swin Transformer) and both fine-tuning and non-fine-tuning experiments. It achieves state-of-the-art performance, outperforming CNN/Transformer baselines by up to 15% across sentiment categories.
-
+The framework supports multiple transformer architectures (ModernBERT, BART, LLaMA,
+DistilBERT, and Swin Transformer) and both fine-tuning and non-fine-tuning experiments. It
+achieves state-of-the-art performance, outperforming CNN/Transformer baselines by up to 15%
+across sentiment categories.
 
 ### Key Features
+
 - End-to-end pipeline for sentiment analysis with LLMs
 - Support for multiple transformer architectures and training strategies
 - Fine-tuning with qLORA and quantization
@@ -201,7 +160,7 @@ checkpoint_dir: "checkpoints"
 
 ---
 
-## Training & Evaluation
+## Training and Evaluation
 
 ### Training
 
@@ -219,7 +178,7 @@ python scripts/swin_train.py --config <path-to-config.yaml>
 python scripts/evaluate.py --config <path-to-config.yaml>
 ```
 
-### Running Experiments (Shell Scripts)
+### Running Experiment Scripts
 
 ```bash
 # Fine-tuning
@@ -268,7 +227,7 @@ python scripts/inference.py \
 
 ---
 
-## Reproducibility: MLLM Inference (Task 1 & Task 2)
+## Reproducing MLLM Inference
 
 The [`inference/`](inference/) directory contains runnable scripts that reproduce the MLLM stage
 of the paper for three model families — **OpenAI GPT-4o mini**, **Google Gemini**, and
@@ -279,7 +238,7 @@ of the paper for three model families — **OpenAI GPT-4o mini**, **Google Gemin
 
 The paper's best configuration is **GPT-4o mini + fine-tuned ModernBERT (= MLLMsent)**.
 
-### 1. Configure API keys
+### Configure API keys
 
 ```bash
 cp .env.example .env
@@ -294,7 +253,7 @@ needs the non-PyPI package:
 pip install git+https://github.com/deepseek-ai/DeepSeek-VL2.git
 ```
 
-### 2. Task 1 — direct classification
+### Task 1: Direct classification
 
 ```bash
 python inference/openai_task1_classify.py \
@@ -305,7 +264,7 @@ python inference/openai_task1_classify.py \
 - Gemini: inference/gemini_task1_classify.py 
 - DeepSeek: inference/deepseek_task1_classify.py
 
-### 3. Task 2 → MLLMsent (descriptions → fine-tuned ModernBERT)
+### Task 2: MLLMsent pipeline
 
 **Generate descriptions from images**
 ```bash
@@ -366,10 +325,6 @@ Notebooks are reserved exclusively for **analysis and visualization**. All train
 
 ---
 
-## Citation 
-```
+## Citation
+
 TODO
-```
-
----
-
