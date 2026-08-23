@@ -45,8 +45,8 @@ The best configuration is **GPT-4o mini descriptions + fine-tuned ModernBERT**, 
 ## Quickstart
 
 ```bash
-git clone https://github.com/neemiasbsilva/multimodal-LLMs-See-Sentiment.git
-cd multimodal-LLMs-See-Sentiment
+git clone https://github.com/neemiasbsilva/multimodal-LLMs-see-sentiment.git
+cd multimodal-LLMs-see-sentiment
 
 uv sync              # or: pip install -e .
 cp .env.example .env # add OPENAI_API_KEY / GEMINI_API_KEY if you will run Task 1/2
@@ -197,7 +197,7 @@ Everything is written under [`output/`](output/), which is gitignored except for
 ## Project layout
 
 ```
-multimodal-LLMs-See-Sentiment/
+multimodal-LLMs-see-sentiment/
 ├── experiments.yaml          # the 141-experiment matrix — the single source of truth
 ├── src/mllmsent/
 │   ├── cli.py                # the mllmsent entry point
