@@ -66,6 +66,15 @@ mllmsent predict -- \
     --num_classes 3
 ```
 
+`data/`, `checkpoints/` and `output/` are gitignored, so a fresh clone starts empty. Fill
+them from the Hub before training or evaluating anything:
+
+```bash
+mllmsent hub pull-datasets                    # inputs, captions, splits and results (~575 MB)
+mllmsent hub pull-datasets --groups inputs    # just the training CSVs (~233 MB)
+mllmsent matrix check                         # 141/141 datasets present
+```
+
 ---
 
 ## Pretrained checkpoints
@@ -79,9 +88,11 @@ All 73 trained classifiers are on the Hub as fp16 safetensors:
     config.json     # base model, id2label, source SHA-256, 5-fold scores
 ```
 
-`mllmsent hub pull-checkpoint <experiment-id>` downloads one under the filename the rest of
-the tooling expects. Every `config.json` records the 5-fold F1 that checkpoint achieved, so
-the model repo and the result CSVs in the dataset repo cross-reference each other.
+`mllmsent hub pull-checkpoint <experiment-id>` downloads one and writes it to
+`checkpoints/` as the fp32 `.pt` that `train`, `predict` and `evaluate` load, under the
+filename the rest of the tooling expects. Every `config.json` records the 5-fold F1 that
+checkpoint achieved, so the model repo and the result CSVs in the dataset repo
+cross-reference each other.
 
 Not published, because the weights were never retained: the LLaMA-3 qLoRA adapters, the Swin
 baseline, and a few BART σ5 cells. Their result CSVs are in the dataset repo regardless.
@@ -99,6 +110,17 @@ baseline, and a few BART σ5 cells. Their result CSVs are in the dataset repo re
 | `captions/` | raw Task-1 direct-classification outputs |
 | `splits/` | the legacy fixed train/validation/test split |
 | `results/` | per-fold predictions, training curves and metrics for all 141 experiments |
+
+`mllmsent hub pull-datasets` mirrors those folders back into the working tree — `inputs/`,
+`captions/` and `splits/` under [`data/`](data/), `results/` under [`output/`](output/) —
+at the exact paths [`experiments.yaml`](experiments.yaml) resolves. Files already on disk
+are kept unless `--force` is passed.
+
+```bash
+mllmsent hub pull-datasets --groups inputs results
+```
+
+Or read one file straight from the Hub, without materialising anything:
 
 ```python
 from datasets import load_dataset
@@ -158,7 +180,8 @@ mllmsent sweep     [--track ...] [--skip-existing] [--continue-on-error]
 mllmsent predict   -- --checkpoint_path ... --input_file ... --output_file ...
 mllmsent evaluate  kfold | stats | posthoc | paired-ttest | vader | zero-shot
 mllmsent attention-flow
-mllmsent hub       status | convert | push-models | push-datasets | pull-checkpoint
+mllmsent hub       status | convert | push-models | push-datasets
+                   pull-datasets | pull-checkpoint
 ```
 
 `--gpu` is applied before torch is imported, so one process can target any device:

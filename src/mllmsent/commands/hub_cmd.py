@@ -1,4 +1,4 @@
-"""`mllmsent hub` — convert checkpoints and publish both Hub repositories."""
+"""`mllmsent hub` — convert, publish and retrieve both Hub repositories."""
 
 from __future__ import annotations
 
@@ -8,6 +8,7 @@ import sys
 from pathlib import Path
 
 from mllmsent.experiments.matrix import load_matrix
+from mllmsent.hub.fetch import GROUPS
 
 MODEL_STAGING = "hub/models"
 DATASET_STAGING = "hub/datasets"
@@ -134,15 +135,43 @@ def cmd_push_datasets(args) -> int:
     return 0
 
 
+def cmd_pull_datasets(args) -> int:
+    from mllmsent.hub.fetch import download_dataset
+
+    matrix = load_matrix(args.matrix)
+    repo_id = args.repo or matrix.hub["dataset_repo"]
+    summary = download_dataset(
+        repo_id,
+        matrix,
+        groups=tuple(args.groups) if args.groups else GROUPS,
+        revision=args.revision,
+        force=args.force,
+    )
+
+    print(f"\nwritten={summary['written']} already present={summary['kept']}")
+    print(f"https://huggingface.co/datasets/{repo_id}")
+    return 0
+
+
 def cmd_pull_checkpoint(args) -> int:
-    from mllmsent.hub.pull import download_checkpoint
+    from mllmsent.hub.pull import download_checkpoint, materialize_checkpoint
 
     matrix = load_matrix(args.matrix)
     spec = matrix.get(args.experiment_id)
     repo_id = args.repo or matrix.hub["model_repo"]
     destination = Path(args.dest) if args.dest else matrix.paths.output_root / "hub/pulled"
-    folder = download_checkpoint(repo_id, spec, destination)
-    print(f"{spec.qualified_id} -> {folder}")
+    folder = download_checkpoint(repo_id, spec, destination, revision=args.revision)
+
+    checkpoint = spec.checkpoint_dir(matrix.paths.checkpoint_root) / spec.checkpoint_name
+    if checkpoint.is_file() and not args.force:
+        state = "already present"
+    else:
+        materialize_checkpoint(folder, checkpoint)
+        state = "written"
+
+    print(f"{spec.qualified_id}")
+    print(f"  safetensors  {folder}")
+    print(f"  checkpoint   {checkpoint} ({state})")
     return 0
 
 
@@ -189,10 +218,23 @@ def register(subparsers) -> None:
     push_datasets.add_argument("--dry-run", action="store_true")
     push_datasets.set_defaults(handler=cmd_push_datasets)
 
-    pull = actions.add_parser("pull-checkpoint", help="download one checkpoint")
+    pull_datasets = actions.add_parser(
+        "pull-datasets", help="download the inputs and results into data/ and output/"
+    )
+    pull_datasets.add_argument("--groups", nargs="*", choices=GROUPS)
+    pull_datasets.add_argument("--repo")
+    pull_datasets.add_argument("--revision")
+    pull_datasets.add_argument("--force", action="store_true")
+    pull_datasets.set_defaults(handler=cmd_pull_datasets)
+
+    pull = actions.add_parser(
+        "pull-checkpoint", help="download one checkpoint into checkpoints/"
+    )
     pull.add_argument("experiment_id")
     pull.add_argument("--repo")
     pull.add_argument("--dest")
+    pull.add_argument("--revision")
+    pull.add_argument("--force", action="store_true")
     pull.set_defaults(handler=cmd_pull_checkpoint)
 
     manifest = actions.add_parser("manifest", help="summarise the staged manifest")

@@ -19,7 +19,10 @@ TWITTER_P2PLUS_REMAP = {0: 1, 1: 0}
 def load_experiment_frame(spec: ExperimentSpec, data_root: Path) -> pd.DataFrame:
     path = spec.dataset_csv(data_root)
     if not path.is_file():
-        raise SystemExit(f"dataset not found for {spec.qualified_id}: {path}")
+        raise SystemExit(
+            f"dataset not found for {spec.qualified_id}: {path}\n"
+            "Run `mllmsent hub pull-datasets --groups inputs` to fetch it from the Hub."
+        )
     frame = pd.read_csv(path)
     print(f"loaded {len(frame)} rows from {path}")
     return frame

@@ -1,4 +1,9 @@
-"""Loading converted checkpoints back, from the Hub or from a local folder."""
+"""Loading converted checkpoints back, from the Hub or from a local folder.
+
+The Hub carries fp16 safetensors; training, predict and evaluate all load a
+pickled fp32 state_dict from checkpoints/. materialize_checkpoint closes that
+gap, so a pulled checkpoint is indistinguishable from a locally trained one.
+"""
 
 from __future__ import annotations
 
@@ -37,3 +42,18 @@ def download_checkpoint(
             local_dir=str(destination),
         )
     return destination / subpath
+
+
+def materialize_checkpoint(folder: Path, destination: Path) -> Path:
+    import torch
+
+    state, _ = load_state_dict(folder)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    torch.save(
+        {
+            key: tensor.float() if tensor.is_floating_point() else tensor
+            for key, tensor in state.items()
+        },
+        destination,
+    )
+    return destination
