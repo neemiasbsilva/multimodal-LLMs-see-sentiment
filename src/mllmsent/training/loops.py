@@ -5,46 +5,6 @@ import torch
 from sklearn.metrics import accuracy_score, f1_score
 
 
-def load_dataframe(file_path):
-    """
-    Simulate loading a dataset from a CSV file.
-
-    Parameters:
-        file_path (str): Path to the dataset file.
-
-    Returns:
-        DataFrame: A pandas DataFrame with the loaded data.
-    """
-    try:
-        df = pd.read_csv(file_path)
-        print(f"Successfully loaded dataset from: {file_path}")
-        return df
-    except FileNotFoundError:
-        print(f"Error: File not found at {file_path}")
-        return None
-
-
-def load_experiment_data(alpha_version, dataset_type, experiment_group):
-    """
-    Load the dataset dynamically based on experiment parameters.
-
-    Parameters:
-        alpha_version (int): The alpha version (e.g., 3, 4, 5).
-        dataset_type (str): Dataset type, e.g., "percept_dataset" or "gpt4-openai-classify".
-        experiment_group (str): Experiment group, e.g., "p5", "p3", "p2plus", "p2neg".
-
-    Returns:
-        DataFrame: The loaded dataset.
-    """
-    # Build the dynamic file path
-    file_path = f"data/{dataset_type}/percept_dataset_alpha{alpha_version}_{experiment_group}.csv"
-
-    # Load the dataset
-    df = load_dataframe(file_path)
-    print(f"Loaded dataset from: {file_path}")
-    return df
-
-
 def compute_loss(outputs, targets, loss_fn, model_name):
     return loss_fn(outputs, targets)
 
@@ -121,15 +81,6 @@ def compute_metrics(preds, targets):
     accuracy = accuracy_score(targets, preds)
     f1 = f1_score(targets, preds, average="weighted")
     return accuracy, f1
-
-def save_checkpoint(model, checkpoint_dir, name_arch, experiment_group, alpha_version, fine_tuning, f1_val, best_f1score):
-    if f1_val > best_f1score:
-        best_f1score = f1_val
-        checkpoint_path = os.path.join(
-            checkpoint_dir, f"best_checkpoint_{name_arch.split('/')[0]}_{experiment_group}_sigma{alpha_version}_{fine_tuning}.pt"
-        )
-        torch.save(model.state_dict(), checkpoint_path)
-    # return best_f1score
 
 def log_metrics(epoch, epochs, train_loss, train_accuracy, train_f1, val_loss, val_accuracy, val_f1, log_file):
     log_entry = (
