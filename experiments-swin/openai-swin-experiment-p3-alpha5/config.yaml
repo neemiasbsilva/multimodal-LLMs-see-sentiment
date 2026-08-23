@@ -1,8 +1,0 @@
-experiment_name: "Experiment Using Swin Transformer"
-learning_rate: 2e-4
-batch_size: 32
-epochs: 15
-model_path: "microsoft/swin-base-simmim-window6-192"
-model_name: "swin"
-log_dir: "experiments-swin/openai-swin-experiment-p3-alpha5/logs"
-checkpoint_dir: "checkpoints"

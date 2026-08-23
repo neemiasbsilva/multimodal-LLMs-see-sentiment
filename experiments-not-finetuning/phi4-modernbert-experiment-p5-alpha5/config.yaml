@@ -1,9 +1,0 @@
-experiment_name: "Experiment Using ModernBERT - Phi4 Captions"
-learning_rate: 1e-2
-batch_size: 512
-epochs: 100
-model_path: "answerdotai/ModernBERT-large"
-max_len: 512
-model_name: "modern-bert"
-log_dir: "experiments-not-finetuning/phi4-modernbert-experiment-p5-alpha5/logs"
-checkpoint_dir: "checkpoints"

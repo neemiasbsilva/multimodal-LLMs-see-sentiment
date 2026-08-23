@@ -1,6 +1,12 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
-name = "perceptsent-llm-approach"
+name = "mllmsent"
 version = "0.1.0"
+description = "MLLMsent: multimodal LLM captioning and text-backbone sentiment classification on PerceptSent."
+readme = "README.md"
 requires-python = ">=3.10,<3.11"
 dependencies = [
     "accelerate==1.7.0",
@@ -79,6 +85,26 @@ dependencies = [
     "google-genai==1.28.0",
     "python-dotenv==1.1.1",
 ]
+
+[project.optional-dependencies]
+# VADER baseline only; deepseek-vl2 is not on PyPI:
+#   pip install git+https://github.com/deepseek-ai/DeepSeek-VL2.git
+baselines = ["nltk>=3.9", "vaderSentiment>=3.3"]
+
+[project.scripts]
+mllmsent = "mllmsent.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/neemiasbsilva/multimodal-LLMs-see-sentiment"
+Models = "https://huggingface.co/Neemias/multimodal-LLMs-See-Sentiment"
+Dataset = "https://huggingface.co/datasets/Neemias/multimodal-LLMs-See-Sentiment"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["mllmsent*"]
+
+[tool.setuptools.package-data]
+mllmsent = ["py.typed"]
 
 [[tool.uv.index]]
 name = "pytorch-cu121"

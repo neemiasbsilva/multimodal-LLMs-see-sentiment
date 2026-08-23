@@ -1,17 +1,30 @@
-# Track the data/ and checkpoints/ folders (via .gitkeep) but ignore their contents.
+# Datasets and weights are distributed through the Hugging Face Hub, not git.
+# The folders are tracked via .gitkeep; their contents are not.
 data/*
 !data/.gitkeep
 checkpoints/*
 !checkpoints/.gitkeep
-envmoderbert/
-__pycache__
-*.gz
-*pt
+output/*
+!output/.gitkeep
+
+*.pt
+*.pth
 *.bin
 *.safetensors
-diagrams/
+*.gz
 *.zip
+*.parquet
+
+__pycache__/
+*.py[cod]
+.venv/
 venv/
-envmodernbert
-reports/attention_flow
+envmodernbert/
+.ipynb_checkpoints/
+*.egg-info/
+build/
+dist/
+
+diagrams/
 .env
+.claude/
