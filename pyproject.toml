@@ -95,7 +95,7 @@ baselines = ["nltk>=3.9", "vaderSentiment>=3.3"]
 mllmsent = "mllmsent.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/neemiasbsilva/multimodal-LLMs-see-sentiment"
+Homepage = "https://github.com/neemiasbsilva/multimodal-LLMs-See-Sentiment"
 Models = "https://huggingface.co/Neemias/multimodal-LLMs-See-Sentiment"
 Dataset = "https://huggingface.co/datasets/Neemias/multimodal-LLMs-See-Sentiment"
 

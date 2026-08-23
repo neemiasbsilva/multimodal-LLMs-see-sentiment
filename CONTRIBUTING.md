@@ -1,4 +1,4 @@
-# Contributing to multimodal-LLMs-see-sentiment
+# Contributing to multimodal-LLMs-See-Sentiment
 
 First off, thank you for considering contributing to this repository! 
 
@@ -58,5 +58,5 @@ To set up the project locally for development:
 1. **Fork the repository** to your own GitHub account.
 2. **Clone the repository** to your local machine:
 ```bash
-   git clone [https://github.com/neemiasbsilva/multimodal-LLMs-see-sentiment.git](https://github.com/neemiasbsilva/multimodal-LLMs-see-sentiment.git)
-   cd multimodal-LLMs-see-sentiment
+   git clone https://github.com/neemiasbsilva/multimodal-LLMs-See-Sentiment.git
+   cd multimodal-LLMs-See-Sentiment

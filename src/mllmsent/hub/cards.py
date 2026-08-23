@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-GITHUB_URL = "https://github.com/neemiasbsilva/multimodal-LLMs-see-sentiment"
+GITHUB_URL = "https://github.com/neemiasbsilva/multimodal-LLMs-See-Sentiment"
 PAPER_URL = "https://arxiv.org/abs/2508.16873"
 ARXIV_ID = "2508.16873"
 
