@@ -93,13 +93,14 @@ def encode_image_base64(image_path: str) -> tuple[str, str]:
 def build_output_path(save_path: str, alpha_version, p_version, kind: str) -> str:
     """Resolves the output CSV path following the repo's data layout.
 
-    ``kind="classify"`` yields ``alpha{a}_{p}.csv`` (direct labels);
-    ``kind="caption"`` yields ``descriptions.csv`` (descriptions are p-independent).
+    ``kind="classify"`` yields ``alpha{a}{p}.csv`` (direct labels), matching the
+    files already in data/*-only/; ``kind="caption"`` yields ``descriptions.csv``
+    (descriptions are p-independent).
     """
     os.makedirs(save_path, exist_ok=True)
     if kind == "caption":
         return os.path.join(save_path, "descriptions.csv")
-    name = f"alpha{alpha_version}_{p_version}.csv" if alpha_version else f"{p_version}.csv"
+    name = f"alpha{alpha_version}{p_version}.csv" if alpha_version else f"{p_version}.csv"
     return os.path.join(save_path, name)
 
 
