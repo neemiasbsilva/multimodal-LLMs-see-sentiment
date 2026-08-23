@@ -1,9 +1,0 @@
-experiment_name: "Experiment using Distil-BERT"
-learning_rate: 1e-5
-batch_size: 256
-epochs: 100
-model_path: "distilbert-base-uncased"
-model_name: "distil-bert"
-max_len: 512
-log_dir: "experiments-twitter/openai-distil-experiment-p2plus-alpha5/logs"
-checkpoint_dir: "checkpoints"

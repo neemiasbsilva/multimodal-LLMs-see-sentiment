@@ -1,9 +1,0 @@
-experiment_name: "Experiment using LLama3 Finetuning with QlORA"
-learning_rate: 1e-5
-batch_size: 4
-epochs: 100
-model_path: "nvidia/Llama3-ChatQA-1.5-8B"
-model_name: "llama-qlora"
-max_len: 1024
-log_dir: "experiments-finetuning/llama3-qlora-p3-alpha3/logs"
-checkpoint_dir: "checkpoints"
