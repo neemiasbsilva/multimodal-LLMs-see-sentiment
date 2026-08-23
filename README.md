@@ -1,330 +1,253 @@
 # Multimodal LLMs See Sentiment
 
 ![Python](https://img.shields.io/badge/Python-3.10-3776AB?logo=python&logoColor=white)
-![uv](https://img.shields.io/badge/uv-locked-DE5FE9?logo=uv&logoColor=white)
-![NumPy](https://img.shields.io/badge/NumPy-2.2-013243?logo=numpy&logoColor=white)
-![pandas](https://img.shields.io/badge/pandas-2.3-150458?logo=pandas&logoColor=white)
-![scikit-learn](https://img.shields.io/badge/scikit--learn-1.7-F7931E?logo=scikitlearn&logoColor=white)
 ![PyTorch](https://img.shields.io/badge/PyTorch-2.5-EE4C2C?logo=pytorch&logoColor=white)
 ![Transformers](https://img.shields.io/badge/Transformers-5.7-FFD21E?logo=huggingface&logoColor=black)
 ![CUDA](https://img.shields.io/badge/CUDA-12.1-76B900?logo=nvidia&logoColor=white)
+![uv](https://img.shields.io/badge/uv-locked-DE5FE9?logo=uv&logoColor=white)
+[![Models](https://img.shields.io/badge/%F0%9F%A4%97%20Models-multimodal--LLMs--See--Sentiment-yellow)](https://huggingface.co/Neemias/multimodal-LLMs-See-Sentiment)
+[![Dataset](https://img.shields.io/badge/%F0%9F%A4%97%20Dataset-multimodal--LLMs--See--Sentiment-yellow)](https://huggingface.co/datasets/Neemias/multimodal-LLMs-See-Sentiment)
+[![arXiv](https://img.shields.io/badge/arXiv-2508.16873-b31b1b.svg)](https://arxiv.org/abs/2508.16873)
 
-**MLLMsent** is a research framework for investigating sentiment reasoning in multimodal
-large language models. It provides end-to-end tools for analyzing how images communicate
-sentiment through complex, scene-level semantics.
+**MLLMsent** ([arXiv:2508.16873](https://arxiv.org/abs/2508.16873)) asks a simple question:
+do multimodal LLMs understand the *sentiment* of an
+image, or only its contents? It turns out that asking an MLLM to **describe** an image and
+then classifying that description beats asking the MLLM for the sentiment directly — by a
+wide margin, and it beats CNN/Transformer vision baselines by up to 15 points.
+
+```
+                    ┌─ Task 1 ─────────────────────────────────┐
+                    │  image ──▶ MLLM ──▶ sentiment            │  direct
+  image ────────────┤                                          │
+                    │  image ──▶ MLLM ──▶ description ──▶ LLM ─┤  MLLMsent  ◀── best
+                    └─ Task 2 ─────────────────────────────────┘
+```
+
+The best configuration is **GPT-4o mini descriptions + fine-tuned ModernBERT**, at
+**95.8 % mean 5-fold F1** on PerceptSent P3/σ5.
+
+---
 
 ## Contents
 
-- [Overview](#overview)
-  - [Key Features](#key-features)
-- [Model Weights and Pre-trained Models](#model-weights-and-pre-trained-models)
-- [Dataset Resources](#dataset-resources)
 - [Quickstart](#quickstart)
-- [Project Structure](#project-structure)
-- [Configuration](#configuration)
-- [Training and Evaluation](#training-and-evaluation)
-  - [Training](#training)
-  - [Evaluation](#evaluation)
-  - [Running Experiment Scripts](#running-experiment-scripts)
-- [Inference](#inference)
-- [Reproducing MLLM Inference](#reproducing-mllm-inference)
-  - [Configure API keys](#configure-api-keys)
-  - [Task 1: Direct classification](#task-1-direct-classification)
-  - [Task 2: MLLMsent pipeline](#task-2-mllmsent-pipeline)
-  - [Docker](#docker)
-- [Data Structure](#data-structure)
-- [Notebooks](#notebooks)
+- [Pretrained checkpoints](#pretrained-checkpoints)
+- [Datasets](#datasets)
+- [The experiment matrix](#the-experiment-matrix)
+- [The CLI](#the-cli)
+- [Reproducing the paper](#reproducing-the-paper)
+- [Project layout](#project-layout)
+- [Docker](#docker)
 - [Citation](#citation)
-
----
-
-## Overview
-
-The framework supports three complementary sentiment-analysis settings:
-
-- **Direct sentiment classification** from images using MLLMs
-- **Sentiment analysis on MLLM-generated captions** using pre-trained LLMs (with only the
-  final classification layer trained)
-- **Full fine-tuning** of LLMs on sentiment-labeled captions
-
-The framework supports multiple transformer architectures (ModernBERT, BART, LLaMA,
-DistilBERT, and Swin Transformer) and both fine-tuning and non-fine-tuning experiments. It
-achieves state-of-the-art performance, outperforming CNN/Transformer baselines by up to 15%
-across sentiment categories.
-
-### Key Features
-
-- End-to-end pipeline for sentiment analysis with LLMs
-- Support for multiple transformer architectures and training strategies
-- Fine-tuning with qLORA and quantization
-- Zero-shot and few-shot evaluation
-- Comprehensive experiment tracking and reproducibility
-- Modular, extensible codebase
-
----
-
-## Model Weights and Pre-trained Models
-
-The framework requires pre-trained model weights for various architectures. Download the compressed model files from:
-**Model Weights**: [checkpoints](https://drive.google.com/drive/u/0/folders/1eumPYLgpk7Gr71lG0j6MtgTpnfbhiBr9)
-
-These weights include fine-tuned models for sentiment analysis across different architectures (BART, ModernBERT, LLaMA, etc.) and training strategies.
-
----
-
-## Dataset Resources
-
-This research framework utilizes two key datasets for training and evaluation:
-
-- **Image Dataset**: [PerceptSent](https://drive.google.com/drive/folders/1JXCVETaUqOEpWne62tT3LFzzNmuOSac2?usp=share_link) - A comprehensive collection of images annotated with sentiment labels, designed for multimodal sentiment analysis research. This dataset enables direct sentiment classification from visual content using MLLMs.
-- **Text Dataset Transcripts**: [MLLMsent-dataset](https://drive.google.com/drive/folders/1LQAOGI2ojzE5ykjr5WbtDJFM1PQWF9On?usp=share_link) - Contains sentiment-labeled text transcripts and captions generated from the image dataset. This dataset supports fine-tuning experiments and sentiment analysis on MLLM-generated captions using pre-trained language models.
-
-Both datasets are essential for the end-to-end sentiment analysis pipeline, supporting both direct image classification and caption-based analysis approaches.
 
 ---
 
 ## Quickstart
 
 ```bash
-# Clone the repository
-$ git clone https://github.com/neemiasbsilva/MLLMsent-framework.git
-$ cd MLLMsent-framework
+git clone https://github.com/neemiasbsilva/multimodal-LLMs-see-sentiment.git
+cd multimodal-LLMs-see-sentiment
 
-# Create checkpoints directory and download model weights
-$ mkdir checkpoints
-# Download weights from:
-# https://drive.google.com/drive/u/0/folders/1eumPYLgpk7Gr71lG0j6MtgTpnfbhiBr9
-# Extract with:
-$ gunzip checkpoints/*.pt.gz
-
-# The text dataset transcript can be find here: https://drive.google.com/drive/folders/1LQAOGI2ojzE5ykjr5WbtDJFM1PQWF9On?usp=share_link
-
-# Install dependencies with uv (recommended; Python >=3.10)
-$ uv sync
-# or with pip
-$ pip install -r requirements.txt
+uv sync              # or: pip install -e .
+cp .env.example .env # add OPENAI_API_KEY / GEMINI_API_KEY if you will run Task 1/2
 ```
 
----
-
-## Project Structure
-
-```
-multimodal-LLMs-see-sentiment/
-├── data/                 # Datasets and model outputs
-├── models/               # Model architectures and utilities
-├── utils/                # Helper functions and tools
-├── experiments-finetuning/      # Fine-tuning experiment configs/results
-├── experiments-not-finetuning/  # Non-fine-tuning experiment configs/results
-├── experiments-swin/     # Swin Transformer experiments
-├── experiments-twitter/  # Twitter-specific experiments
-├── checkpoints/          # Model checkpoints
-├── scripts/              # Training, evaluation, and inference scripts
-├── notebooks/            # Analysis and prototyping notebooks
-├── reports/              # Results and visualizations
-├── textaugment/          # Text augmentation utilities
-├── envmodernbert/        # ModernBERT environment
-├── run-*.sh              # Shell scripts for experiments
-├── requirements.txt      # Python dependencies
-├── pyproject.toml        # Python project config (PEP 621)
-└── uv.lock               # Dependency lock file
-```
-
----
-
-## Configuration
-
-Experiments are configured via YAML files (see `experiments-finetuning/` and `experiments-not-finetuning/`). Example config:
-
-```yaml
-experiment_name: "Experiment using LLama3 Finetuning with QlORA"
-learning_rate: 1e-5
-batch_size: 8
-epochs: 100
-model_path: "nvidia/Llama3-ChatQA-1.5-8B"
-model_name: "llama-qlora"
-max_len: 1024
-log_dir: "experiments-finetuning/llama3-qlora-p3-alpha3/logs"
-checkpoint_dir: "checkpoints"
-```
-
-- **experiment_name**: Name of the experiment
-- **learning_rate**: Learning rate for training
-- **batch_size**: Batch size
-- **epochs**: Number of epochs
-- **model_path**: HuggingFace model path or identifier
-- **model_name**: Model type (e.g., "llama-qlora", "modern-bert", "bart", "distil-bert")
-- **max_len**: Max sequence length
-- **log_dir**: Directory for logs
-- **checkpoint_dir**: Directory for saving checkpoints
-
----
-
-## Training and Evaluation
-
-### Training
+Classify a CSV of image descriptions with the paper's best checkpoint — no training, no
+dataset download:
 
 ```bash
-python scripts/train_gpu0.py --config <path-to-config.yaml>
-# or
-python scripts/train_gpu1.py --config <path-to-config.yaml>
-# or (for Swin Transformer)
-python scripts/swin_train.py --config <path-to-config.yaml>
-```
-
-### Evaluation
-
-```bash
-python scripts/evaluate.py --config <path-to-config.yaml>
-```
-
-### Running Experiment Scripts
-
-```bash
-# Fine-tuning
-./run-finetuning-bart.sh
-./run-finetuning-modern-bert.sh
-./run-finetuning-llama.sh
-
-# Non-fine-tuning
-./run-not-finetune-bart.sh
-./run-not-finetune-modern-bert.sh
-```
-
----
-
-## Inference
-
-See [`scripts/README_inference.md`](scripts/README_inference.md) for full details.
-
-**Quick Start:**
-
-```bash
-# List available checkpoints
-python scripts/run_inference.py --list
-
-# Run inference (recommended)
-python scripts/run_inference.py \
-    --checkpoint checkpoints/best_checkpoint_gpt4-openai-classify_bart_p5_sigma3_finetuned.pt \
-    --input your_data.csv \
-    --output predictions.csv
-
-# Or use the main script directly
-python scripts/inference.py \
-    --model_name bart \
-    --checkpoint_path checkpoints/best_checkpoint_gpt4-openai-classify_bart_p5_sigma3_finetuned.pt \
-    --model_path facebook/bart-large-mnli \
-    --input_file your_data.csv \
-    --output_file predictions.csv \
-    --num_classes 5 \
-    --batch_size 32 \
-    --max_len 512
-```
-
-- Input CSV must have a `text` column (or specify with `--text_column`)
-- Output CSV will have a new `prediction` column
-- See the [inference README](scripts/README_inference.md) for model-specific details and troubleshooting
-
----
-
-## Reproducing MLLM Inference
-
-The [`inference/`](inference/) directory contains runnable scripts that reproduce the MLLM stage
-of the paper for three model families — **OpenAI GPT-4o mini**, **Google Gemini**, and
-**DeepSeek-VL2** — for both tasks:
-
-- **Task 1** — direct sentiment classification from the image (`*_task1_classify.py`) → `[id, sentiment, raw_response]`
-- **Task 2** — image description for the description-mediated pipeline (`*_task2_caption.py`) → `[id, text]`
-
-The paper's best configuration is **GPT-4o mini + fine-tuned ModernBERT (= MLLMsent)**.
-
-### Configure API keys
-
-```bash
-cp .env.example .env
-# edit .env and set OPENAI_API_KEY / GEMINI_API_KEY (and optionally the model ids)
-```
-
-The scripts load `.env` automatically via `python-dotenv`; keys are never hardcoded. The OpenAI
-and Gemini scripts are API calls (no GPU required). DeepSeek-VL2 runs locally and additionally
-needs the non-PyPI package:
-
-```bash
-pip install git+https://github.com/deepseek-ai/DeepSeek-VL2.git
-```
-
-### Task 1: Direct classification
-
-```bash
-python inference/openai_task1_classify.py \
-    --dataset_csv data/gpt4-openai-classify/percept_dataset_alpha3_p3.csv \
-    --save_path data/gpt4-openai-only --alpha_version 3 --p_version p3
-```
-**Note**: 
-- Gemini: inference/gemini_task1_classify.py 
-- DeepSeek: inference/deepseek_task1_classify.py
-
-### Task 2: MLLMsent pipeline
-
-**Generate descriptions from images**
-```bash
-# 
-python inference/openai_task2_caption.py \
-    --dataset_csv data/gpt4-openai-classify/percept_dataset_alpha3_p3.csv \
-    --save_path data/gpt4-openai-classify
-```
-
-**Classify the descriptions with the fine-tuned ModernBERT classifier**
-```bash
-python scripts/inference.py \
+mllmsent hub pull-checkpoint openai-modernbert-p3-sigma5
+mllmsent predict -- \
     --model_name modern-bert \
-    --checkpoint_path checkpoints/best_checkpoint_gpt4-openai-classify_modern-bert_p3_sigma3_finetuned.pt \
+    --checkpoint_path checkpoints/best_checkpoint_gpt4-openai-classify_modernbert_p3_sigma5_finetuned.pt \
     --model_path answerdotai/ModernBERT-large \
-    --input_file data/gpt4-openai-classify/descriptions.csv \
+    --input_file your_descriptions.csv \
     --output_file predictions.csv \
     --num_classes 3
 ```
 
-The `descriptions.csv` provides the `text` column consumed by `scripts/inference.py`; merge it with
-ground-truth labels (see `gpt4_experiment.py`) to rebuild the per-`⟨σ, P⟩` training CSVs.
+---
 
-### Docker
+## Pretrained checkpoints
 
-A ready-to-use image — provisioned with `uv` and bundling **no weights, keys, or datasets** — is
-published to GHCR on every GitHub Release. It runs no script by default; it just gives you the
-environment:
+All 73 trained classifiers are on the Hub as fp16 safetensors:
+**[Neemias/multimodal-LLMs-See-Sentiment](https://huggingface.co/Neemias/multimodal-LLMs-See-Sentiment)**
+
+```
+{caption_mllm}/{backbone}/{problem}/sigma{n}/{finetuned|not_finetuned}/
+    model.safetensors
+    config.json     # base model, id2label, source SHA-256, 5-fold scores
+```
+
+`mllmsent hub pull-checkpoint <experiment-id>` downloads one under the filename the rest of
+the tooling expects. Every `config.json` records the 5-fold F1 that checkpoint achieved, so
+the model repo and the result CSVs in the dataset repo cross-reference each other.
+
+Not published, because the weights were never retained: the LLaMA-3 qLoRA adapters, the Swin
+baseline, and a few BART σ5 cells. Their result CSVs are in the dataset repo regardless.
+
+---
+
+## Datasets
+
+**[Neemias/multimodal-LLMs-See-Sentiment](https://huggingface.co/datasets/Neemias/multimodal-LLMs-See-Sentiment)**
+(`--repo-type=dataset`) carries both the inputs and every result:
+
+| folder | contents |
+|---|---|
+| `inputs/` | MLLM-generated descriptions paired with sentiment labels, per MLLM |
+| `captions/` | raw Task-1 direct-classification outputs |
+| `splits/` | the legacy fixed train/validation/test split |
+| `results/` | per-fold predictions, training curves and metrics for all 141 experiments |
+
+```python
+from datasets import load_dataset
+
+data = load_dataset(
+    "Neemias/multimodal-LLMs-See-Sentiment",
+    data_files="inputs/gpt4-openai-classify/percept_dataset_alpha5_p3.csv",
+)
+```
+
+Two axes run through every filename:
+
+- **σ (sigma / alpha)** ∈ {3, 4, 5} — how many annotators had to agree for a sample to
+  survive. Higher σ means a smaller, cleaner set.
+- **P (problem)** ∈ {`p5`, `p3`, `p2plus`, `p2neg`} — label granularity. `p2plus` folds
+  Neutral into Positive; `p2neg` folds it into Negative.
+
+The PerceptSent source images are not redistributed. Point `IMAGE_DIR` at a directory
+holding `part1/`…`part6/` to run Task 1 or Task 2 yourself.
+
+---
+
+## The experiment matrix
+
+Every experiment is one row of a cartesian product declared in
+[`experiments.yaml`](experiments.yaml) — 141 in total, replacing what used to be 141
+near-identical `config.yaml` files whose *directory names* encoded the experiment's identity.
+
+```yaml
+runs:
+  - id: core-finetuned
+    track: finetuning
+    mllm: [openai, deepseek, minigpt4]
+    backbone: [modernbert, bart, llama3-qlora]
+    problem: [p3, p5]
+    sigma: [3, 5]
+```
+
+Inspect it without running anything:
+
+```bash
+mllmsent matrix list --track finetuning --backbone modernbert
+mllmsent matrix show openai-modernbert-p3-sigma5
+mllmsent matrix check          # every log dir, dataset and checkpoint accounted for
+```
+
+---
+
+## The CLI
+
+```
+mllmsent matrix    list | resolve | show | check
+mllmsent classify  --mllm {openai|gemini|deepseek|phi4|gemma4} --sigma N --p P   # Task 1
+mllmsent caption   --mllm ... --sigma N                                          # Task 2
+mllmsent train     [ids...] [--track ...] [--gpu 0] [--dry-run]
+mllmsent sweep     [--track ...] [--skip-existing] [--continue-on-error]
+mllmsent predict   -- --checkpoint_path ... --input_file ... --output_file ...
+mllmsent evaluate  kfold | stats | posthoc | paired-ttest | vader | zero-shot
+mllmsent attention-flow
+mllmsent hub       status | convert | push-models | push-datasets | pull-checkpoint
+```
+
+`--gpu` is applied before torch is imported, so one process can target any device:
+
+```bash
+mllmsent --gpu 1 sweep --track not-finetuning --backbone modernbert
+```
+
+`--dry-run` prints every resolved path and hyperparameter for the selected experiments
+without training, which is the fastest way to check a change did what you meant.
+
+---
+
+## Reproducing the paper
+
+```bash
+# 1. Descriptions from the MLLM (Task 2)
+mllmsent caption --mllm openai --sigma 5 --resume
+
+# 2. Train the text classifier on those descriptions
+mllmsent train openai-modernbert-p3-sigma5 --gpu 0
+
+# 3. Metrics and significance tests
+mllmsent evaluate kfold -- --model openai --tasks 1 2a 2b
+mllmsent evaluate stats
+```
+
+For the direct baseline (Task 1), swap step 1 for
+`mllmsent classify --mllm openai --sigma 5 --p p3`.
+
+Everything is written under [`output/`](output/), which is gitignored except for its
+`.gitkeep` — the result CSVs live on the Hub instead of in git history.
+
+---
+
+## Project layout
+
+```
+multimodal-LLMs-see-sentiment/
+├── experiments.yaml          # the 141-experiment matrix — the single source of truth
+├── src/mllmsent/
+│   ├── cli.py                # the mllmsent entry point
+│   ├── labels.py             # the one sentiment encoding everything derives from
+│   ├── experiments/          # ExperimentSpec + matrix expansion
+│   ├── inference/backends/   # one module per MLLM, on a shared common.py
+│   ├── training/             # one trainer for every backbone and track
+│   ├── evaluation/           # k-fold metrics, Holm-corrected t-tests, baselines
+│   ├── analysis/             # attention rollout
+│   └── hub/                  # convert, push and pull Hub artifacts
+├── scripts/                  # env.sh + sweep.sh, and nothing else
+├── data/                     # gitignored; mirrored on the Hub
+├── checkpoints/              # gitignored; mirrored on the Hub
+├── output/                   # gitignored; experiment results and staging
+├── third_party/minigpt4/     # upstream MiniGPT-4, kept out of the package
+└── notebooks/                # analysis and visualisation only
+```
+
+---
+
+## Docker
+
+An image with the environment — and no weights, keys or data — is published to GHCR on every
+release:
 
 ```bash
 docker pull ghcr.io/neemiasbsilva/multimodal-llms-see-sentiment:latest
 docker run --rm -it --gpus all --env-file .env \
     ghcr.io/neemiasbsilva/multimodal-llms-see-sentiment:latest
-# then, inside the container:
-python inference/openai_task1_classify.py --help
 ```
-
----
-
-## Data Structure
-
-- `data/` contains all datasets and model outputs, including:
-  - `gpt4-openai-classify/`, `minigpt4-classify/`, `deepseek/`, etc.
-  - `percept_dataset/`, `twiter/`, `raw/`, `train/`, `test/`, `validation/`
-
----
-
-## Notebooks
-
-Notebooks are reserved exclusively for **analysis and visualization**. All training and inference code lives in `scripts/`.
-
-| Notebook | Purpose |
-|---|---|
-| `plot-results.ipynb` | F1-score comparisons across all models and problem setups |
-| `eda-class-distribution.ipynb` | Class-distribution exploratory analysis per dataset variant |
-| `interval_confidence.ipynb` | Confidence-interval analysis |
-| `fine-tuning-expeirments.ipynb` | Training-curve visualizations for fine-tuning runs |
 
 ---
 
 ## Citation
 
-TODO
+```bibtex
+@misc{dasilva2026multimodalllmssentiment,
+      title={Multimodal LLMs See Sentiment},
+      author={Neemias B. da Silva and John Harrison and Rodrigo Minetto and Myriam R. Delgado and Bogdan T. Nassu and Thiago H. Silva},
+      year={2026},
+      eprint={2508.16873},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2508.16873},
+}
+```
+
+---
+
+## License
+
+Code released under the terms in [LICENSE](LICENSE). The Hub artifacts are CC-BY-4.0; the
+base models keep their own licenses.
