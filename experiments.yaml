@@ -1,0 +1,271 @@
+version: 1
+
+paths:
+  data_root: data
+  output_root: output
+  checkpoint_root: checkpoints
+  results_root: output/experiments
+  image_root: !env [IMAGE_DIR, perceptdata]
+  twitter_captions_root: !env [TWITTER_CAPTIONS_DIR, data/twitter]
+
+hub:
+  model_repo: Neemias/multimodal-LLMs-See-Sentiment
+  dataset_repo: Neemias/multimodal-LLMs-See-Sentiment
+
+# dataset_dir      : folder under data_root holding percept_dataset_alpha{sigma}_{problem}.csv
+# checkpoint_token : token baked into existing best_checkpoint_* filenames — changing it orphans weights
+# dir_prefix       : leading token of the legacy experiment directory ("" for minigpt4)
+mllms:
+  openai:
+    dataset_dir: gpt4-openai-classify
+    checkpoint_token: gpt4-openai-classify
+    dir_prefix: openai
+    caption_dir: gpt4-openai-only
+  deepseek:
+    dataset_dir: deepseek
+    checkpoint_token: deepseek
+    dir_prefix: deepseek
+    caption_dir: deepseek-only
+  gemini:
+    dataset_dir: gemini-classify
+    checkpoint_token: gemini
+    dir_prefix: gemini
+    caption_dir: gemini-only
+  phi4:
+    dataset_dir: phi4-classify
+    checkpoint_token: phi4-classify
+    dir_prefix: phi4
+    caption_dir: phi4-only
+  gemma4:
+    dataset_dir: gemma4-classify
+    checkpoint_token: gemma4-classify
+    dir_prefix: gemma4
+    caption_dir: gemma4-only
+  minigpt4:
+    dataset_dir: minigpt4-classify
+    checkpoint_token: minigpt4-classify
+    dir_prefix: ""
+    caption_dir: null
+
+backbones:
+  modernbert:
+    model_name: modern-bert
+    model_path: answerdotai/ModernBERT-large
+    dir_token: modernbert
+    dir_kind: experiment
+    checkpoint_token: modernbert
+    finetuning_rule: tree_not_frozen
+    max_len: 512
+    epochs: 100
+  bart:
+    model_name: bart
+    model_path: facebook/bart-large-mnli
+    dir_token: bart
+    dir_kind: experiment
+    checkpoint_token: bart
+    finetuning_rule: tree_not_frozen
+    max_len: 512
+    epochs: 100
+  distilbert:
+    model_name: distil-bert
+    model_path: distilbert-base-uncased
+    dir_token: distil
+    dir_kind: experiment
+    checkpoint_token: distilbert
+    finetuning_rule: tree_not_frozen
+    max_len: 512
+    epochs: 100
+  llama3-qlora:
+    model_name: llama-qlora
+    model_path: nvidia/Llama3-ChatQA-1.5-8B
+    dir_token: llama3-qlora
+    dir_kind: null
+    checkpoint_token: llamaqlora
+    finetuning_rule: tree_is_finetuning
+    max_len: 1024
+    epochs: 100
+  swin:
+    model_name: swin
+    model_path: microsoft/swin-base-simmim-window6-192
+    dir_token: swin
+    dir_kind: experiment
+    checkpoint_token: swin
+    finetuning_rule: tree_not_frozen
+    max_len: null
+    epochs: 15
+    modality: image
+
+tracks:
+  finetuning:
+    tree: experiments-finetuning
+    freeze_backbone: false
+    objective: classification
+    validation: kfold
+    hyperparameters: {learning_rate: 1e-5, batch_size: 32, patience: 10}
+    overrides:
+      - when: {backbone: bart}
+        set: {batch_size: 8}
+      - when: {backbone: llama3-qlora}
+        set: {batch_size: 4}
+      - when: {backbone: modernbert, mllm: [phi4, gemma4]}
+        set: {batch_size: 8}
+      - only:
+          - minigpt4-llama3-qlora-p3-sigma5
+          - minigpt4-llama3-qlora-p5-sigma5
+          - openai-llama3-qlora-p3-sigma5
+          - openai-llama3-qlora-p5-sigma3
+          - openai-llama3-qlora-p5-sigma5
+        set: {batch_size: 8}
+
+  not-finetuning:
+    tree: experiments-not-finetuning
+    freeze_backbone: true
+    objective: classification
+    validation: kfold
+    # patience 25 is the train_gpu1 lineage; 50 is train_gpu0, which ran bart,
+    # llama3-qlora and the phi4/gemma4 modernbert families.
+    hyperparameters: {learning_rate: 1e-2, batch_size: 512, patience: 25}
+    overrides:
+      - when: {backbone: bart}
+        set: {learning_rate: 1e-3, batch_size: 32, patience: 50}
+      - when: {backbone: distilbert}
+        set: {learning_rate: 1e-3, batch_size: 128}
+      - when: {backbone: llama3-qlora}
+        set: {learning_rate: 1e-5, batch_size: 16, patience: 50}
+      - when: {backbone: modernbert, mllm: [phi4, gemma4]}
+        set: {patience: 50}
+      - only:
+          - minigpt4-llama3-qlora-p5-sigma3
+          - openai-llama3-qlora-p5-sigma3
+          - openai-llama3-qlora-p5-sigma5
+        set: {epochs: 10}
+      - only:
+          - deepseek-llama3-qlora-p3-sigma3
+          - deepseek-llama3-qlora-p3-sigma5
+        set: {learning_rate: 1e-3, batch_size: 64, epochs: 10, max_len: 512}
+      - only:
+          - deepseek-llama3-qlora-p5-sigma3
+          - deepseek-llama3-qlora-p5-sigma5
+        set: {batch_size: 64, epochs: 10, max_len: 512}
+
+  twitter:
+    tree: experiments-twitter
+    freeze_backbone: false
+    objective: classification
+    validation: twitter_captions
+    hyperparameters: {learning_rate: 1e-5, batch_size: 32, patience: 10}
+    overrides:
+      - when: {backbone: distilbert}
+        set: {batch_size: 256}
+
+  swin:
+    tree: experiments-swin
+    freeze_backbone: false
+    objective: classification
+    validation: kfold
+    hyperparameters: {learning_rate: 2e-4, batch_size: 32, patience: 10}
+
+  # Per-fold checkpoints land beside the logs; the four runs of this track all
+  # declared checkpoint_dir: checkpoints and would otherwise overwrite each other.
+  subjectivity:
+    tree: exps-tuning-handle-subjectivity
+    freeze_backbone: false
+    objective: regression
+    validation: kfold
+    hyperparameters: {learning_rate: 1e-5, batch_size: 8, patience: 10}
+    checkpoint_dir_template: "{tree}/{dir_name}/logs/checkpoints"
+
+  subjectivity-no-sigma:
+    tree: exps-tuning-handle-subjectivity-no-sigma
+    freeze_backbone: false
+    objective: regression
+    validation: kfold
+    hyperparameters: {learning_rate: 1e-5, batch_size: 16, patience: 10}
+
+runs:
+  - id: core-finetuned
+    track: finetuning
+    mllm: [openai, deepseek, minigpt4]
+    backbone: [modernbert, bart, llama3-qlora]
+    problem: [p3, p5]
+    sigma: [3, 5]
+
+  # The modernbert runs of this block sit in directories named "...-qlora-..."
+  # although they are not qLoRA; the name is kept so existing results resolve.
+  - id: gemini-finetuned
+    track: finetuning
+    mllm: [gemini]
+    backbone: [modernbert, llama3-qlora]
+    problem: [p3, p5]
+    sigma: [3, 5]
+    dir_kind: {modernbert: qlora}
+
+  - id: openweights-finetuned
+    track: finetuning
+    mllm: [phi4, gemma4]
+    backbone: [modernbert]
+    problem: [p3, p5]
+    sigma: [3, 5]
+
+  - id: core-not-finetuned
+    track: not-finetuning
+    mllm: [openai, deepseek, minigpt4]
+    backbone: [modernbert, bart, distilbert, llama3-qlora]
+    problem: [p3, p5]
+    sigma: [3, 5]
+
+  - id: gemini-not-finetuned
+    track: not-finetuning
+    mllm: [gemini]
+    backbone: [modernbert, llama3-qlora]
+    problem: [p3, p5]
+    sigma: [3, 5]
+
+  - id: openweights-not-finetuned
+    track: not-finetuning
+    mllm: [phi4, gemma4]
+    backbone: [modernbert]
+    problem: [p3, p5]
+    sigma: [3, 5]
+
+  - id: twitter-transfer
+    track: twitter
+    mllm: [openai]
+    backbone: [modernbert, bart, distilbert, llama3-qlora]
+    problem: [p2plus, p2neg]
+    sigma: [3, 5]
+
+  - id: swin-image-baseline
+    track: swin
+    mllm: [openai]
+    backbone: [swin]
+    problem: [p3, p5]
+    sigma: [3, 5]
+
+  - id: subjectivity-regression
+    track: subjectivity
+    mllm: [openai]
+    backbone: [modernbert]
+    problem: [p3, p5]
+    sigma: [3, 5]
+
+  - id: subjectivity-no-sigma
+    track: subjectivity-no-sigma
+    mllm: [openai]
+    backbone: [modernbert]
+    problem: [p5]
+    sigma: [null]
+    dir_override:
+      openai-modernbert-p5-sigmanone: regression-openai-modernbert-experiment-p5
+    dataset_override:
+      openai-modernbert-p5-sigmanone: gpt4-openai-regression/percept_dataset_regression_p5.csv
+    checkpoint_dir_override:
+      openai-modernbert-p5-sigmanone: exps-tuning-handle-subjectivity-no-sigma/regression-openai-modernbert-experiment-p5/logs/checkpoints
+
+# Filenames from a code revision that used the short "openai" token. Resolved as
+# a fallback when the canonical name is absent; never regenerated.
+checkpoint_aliases:
+  openai-bart-p3-sigma5-finetuned: best_checkpoint_openai_bart_p3_sigma5_finetuned.pt
+  openai-bart-p5-sigma5-finetuned: best_checkpoint_openai_bart_p5_sigma5_finetuned.pt
+  openai-modernbert-p3-sigma5-finetuned: best_checkpoint_openai_modernbert_p3_sigma5_finetuned.pt
+  openai-modernbert-p5-sigma5-finetuned: best_checkpoint_openai_modernbert_p5_sigma5_finetuned.pt
