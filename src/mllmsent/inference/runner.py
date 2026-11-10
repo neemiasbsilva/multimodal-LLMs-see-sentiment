@@ -4,19 +4,19 @@ from __future__ import annotations
 
 import importlib
 
-import pandas as pd
-
-from mllmsent.inference.backends.base import CAPTION, CLASSIFY, Backend
+from mllmsent.inference.backends.base import CAPTION, Backend
 from mllmsent.inference.common import (
     DESCRIPTION_PROMPT,
     build_classification_prompt,
     build_output_path,
     extract_sentiment,
+    load_image_frame,
     run_over_dataset,
 )
 
 BACKEND_MODULES = {
     "openai": "mllmsent.inference.backends.openai",
+    "terra": "mllmsent.inference.backends.terra",
     "gemini": "mllmsent.inference.backends.gemini",
     "deepseek": "mllmsent.inference.backends.deepseek",
     "phi4": "mllmsent.inference.backends.phi4",
@@ -48,7 +48,7 @@ def run(backend: Backend, task: str, args) -> str:
     problem = getattr(args, "p_version", None)
     prompt = DESCRIPTION_PROMPT if task == CAPTION else build_classification_prompt(problem)
 
-    frame = pd.read_csv(args.dataset_csv)
+    frame = load_image_frame(args.dataset_csv)
     output_file = build_output_path(
         args.save_path, args.alpha_version, problem, kind=task
     )
@@ -65,7 +65,7 @@ def run(backend: Backend, task: str, args) -> str:
         output_file,
         infer,
         build_record_factory(task, problem),
-        resume=args.resume,
+        resume=not args.restart,
         limit=args.limit,
         desc=f"{backend.label} Task {'2' if task == CAPTION else '1'}",
     )

@@ -27,6 +27,12 @@ class Backend:
     default_model: str
     default_caption_dir: str | None = None
     default_revision: str | None = None
+    # Set only on OpenAI reasoning models; None means the model has no
+    # reasoning control and --reasoning-effort is refused.
+    default_reasoning_effort: str | None = None
+
+
+REASONING_EFFORTS = ("none", "low", "medium", "high", "xhigh", "max")
 
 
 def add_backend_args(parser) -> None:
@@ -56,6 +62,14 @@ def add_backend_args(parser) -> None:
     group.add_argument("--max-new-tokens", dest="max_new_tokens", type=int, default=None)
     group.add_argument("--temperature", type=float, default=1.0)
     group.add_argument(
+        "--reasoning-effort",
+        dest="reasoning_effort",
+        choices=REASONING_EFFORTS,
+        default=None,
+        help="OpenAI reasoning models only (GPT-6.1 Terra defaults to none, "
+        "which keeps the GPT-4o mini token cap and temperature in force)",
+    )
+    group.add_argument(
         "--4bit",
         dest="load_4bit",
         action="store_true",
@@ -72,12 +86,11 @@ def resolve_revision(args, backend: Backend) -> str | None:
 
 
 def load_env() -> None:
-    try:
-        from dotenv import load_dotenv
+    # The CLI already loads .env before the matrix is read; backends call this
+    # again so they also work when driven from Python without the CLI.
+    from mllmsent.config import load_env as load_repo_env
 
-        load_dotenv()
-    except ModuleNotFoundError:
-        pass
+    load_repo_env()
 
 
 def require_env(name: str) -> str:

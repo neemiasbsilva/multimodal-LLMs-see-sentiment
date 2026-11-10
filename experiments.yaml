@@ -41,6 +41,12 @@ mllms:
     checkpoint_token: gemma4-classify
     dir_prefix: gemma4
     caption_dir: gemma4-only
+  # GPT-6.1 Terra, the GPT-4o mini request re-sent to OpenAI's newer model.
+  terra:
+    dataset_dir: gpt61-terra-classify
+    checkpoint_token: gpt61-terra-classify
+    dir_prefix: terra
+    caption_dir: gpt61-terra-only
   minigpt4:
     dataset_dir: minigpt4-classify
     checkpoint_token: minigpt4-classify
@@ -207,6 +213,16 @@ runs:
     problem: [p3, p5]
     sigma: [3, 5]
 
+  # GPT-6.1 Terra descriptions through the same Task 2a/2b cells as the GPT-4o
+  # mini (openai) lineage. `mllmsent caption --mllm terra` and `mllmsent
+  # build-data` produce the datasets these rows point at.
+  - id: terra-finetuned
+    track: finetuning
+    mllm: [terra]
+    backbone: [modernbert, bart, llama3-qlora]
+    problem: [p3, p5]
+    sigma: [3, 5]
+
   - id: core-not-finetuned
     track: not-finetuning
     mllm: [openai, deepseek, minigpt4]
@@ -225,6 +241,13 @@ runs:
     track: not-finetuning
     mllm: [phi4, gemma4]
     backbone: [modernbert]
+    problem: [p3, p5]
+    sigma: [3, 5]
+
+  - id: terra-not-finetuned
+    track: not-finetuning
+    mllm: [terra]
+    backbone: [modernbert, bart, distilbert, llama3-qlora]
     problem: [p3, p5]
     sigma: [3, 5]
 

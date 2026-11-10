@@ -52,6 +52,7 @@ MODEL_DATA_DIRS: dict = {
     "gemma4": "gemma4-only",
     "deepseek": "deepseek-only",
     "openai": "gpt4-openai-only",
+    "terra": "gpt61-terra-only",
 }
 
 # Prefix used in experiment directory names
@@ -60,6 +61,7 @@ MODEL_EXP_PREFIX: dict = {
     "gemma4": "gemma4-modernbert-experiment",
     "deepseek": "deepseek-modernbert-experiment",
     "openai": "openai-modernbert-experiment",
+    "terra": "terra-modernbert-experiment",
 }
 
 GT_DIR_NAME = "gpt4-openai-classify"

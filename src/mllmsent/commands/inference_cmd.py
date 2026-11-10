@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import argparse
+
 from mllmsent.experiments.matrix import load_matrix
 from mllmsent.inference.backends.base import CAPTION, CLASSIFY, add_backend_args
 from mllmsent.inference.runner import BACKEND_NAMES, load_backend, run
@@ -12,7 +14,8 @@ def add_common_args(parser, task: str) -> None:
     parser.add_argument(
         "--sigma",
         dest="alpha_version",
-        help="annotator-agreement threshold; picks the source CSV and names the output",
+        help="annotator-agreement threshold; picks the source CSV and names the output "
+        "(caption: omit to describe every annotated image once)",
     )
     parser.add_argument(
         "--p",
@@ -24,8 +27,20 @@ def add_common_args(parser, task: str) -> None:
     parser.add_argument("--dataset-csv", dest="dataset_csv")
     parser.add_argument("--image-dir", dest="image_dir")
     parser.add_argument("--save-path", dest="save_path")
-    parser.add_argument("--limit", type=int, default=None)
-    parser.add_argument("--resume", action="store_true")
+    parser.add_argument(
+        "--limit",
+        type=int,
+        default=None,
+        help="process at most this many not-yet-done images (pilot runs)",
+    )
+    parser.add_argument(
+        "--restart",
+        action="store_true",
+        help="discard the output CSV and start over; by default a run keeps it, "
+        "skips the ids already saved and appends every new answer as it arrives",
+    )
+    # Resuming is the default now; the flag stays so older commands keep working.
+    parser.add_argument("--resume", action="store_true", help=argparse.SUPPRESS)
     add_backend_args(parser)
 
 
@@ -40,25 +55,37 @@ def resolve_paths(args, task: str) -> None:
         raise SystemExit(f"no experiments declared for mllm={args.mllm}")
 
     if args.dataset_csv is None:
+        if args.alpha_version is None and task == CLASSIFY:
+            raise SystemExit("pass --dataset-csv, or --sigma and --p")
         if args.alpha_version is None:
-            raise SystemExit("pass --dataset-csv, or --sigma (and --p for classify)")
-        # Task 2 descriptions are p-independent, so any problem at this sigma
-        # supplies the same image ids.
-        source = next(
-            (
-                spec
-                for spec in candidates
-                if str(spec.sigma) == str(args.alpha_version)
-                and (args.p_version is None or spec.problem == args.p_version)
-            ),
-            None,
-        )
-        if source is None:
-            raise SystemExit(
-                f"no experiment for mllm={args.mllm} p={args.p_version} "
-                f"sigma={args.alpha_version}"
+            # Descriptions are label-independent: without --sigma, describe
+            # every annotated image once, straight from the vote file, which
+            # covers every sigma/problem subset built from them later.
+            votes = matrix.paths.data_root / "raw" / "dataset.json"
+            if not votes.is_file():
+                raise SystemExit(
+                    f"{votes} not found; run `mllmsent hub pull-datasets --groups inputs`, "
+                    "or pass --sigma or --dataset-csv"
+                )
+            args.dataset_csv = str(votes)
+        else:
+            # Task 2 descriptions are p-independent, so any problem at this
+            # sigma supplies the same image ids.
+            source = next(
+                (
+                    spec
+                    for spec in candidates
+                    if str(spec.sigma) == str(args.alpha_version)
+                    and (args.p_version is None or spec.problem == args.p_version)
+                ),
+                None,
             )
-        args.dataset_csv = str(source.dataset_csv(matrix.paths.data_root))
+            if source is None:
+                raise SystemExit(
+                    f"no experiment for mllm={args.mllm} p={args.p_version} "
+                    f"sigma={args.alpha_version}"
+                )
+            args.dataset_csv = str(source.dataset_csv(matrix.paths.data_root))
 
     if args.save_path is None:
         backend = load_backend(args.mllm)

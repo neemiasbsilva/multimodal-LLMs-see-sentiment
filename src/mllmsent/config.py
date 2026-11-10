@@ -26,6 +26,23 @@ def _env_constructor(loader: MatrixLoader, node: yaml.Node) -> str:
 MatrixLoader.add_constructor("!env", _env_constructor)
 
 
+def load_env() -> None:
+    """Loads the repository's `.env` into os.environ, if python-dotenv is installed.
+
+    Runs before experiments.yaml is read, so its `!env` tags (IMAGE_DIR, ...)
+    and the API backends' keys come from the same file. Shell variables that
+    are already set win. The file is looked up from the working directory
+    upwards first, then from this package's own location.
+    """
+    try:
+        from dotenv import find_dotenv, load_dotenv
+    except ModuleNotFoundError:
+        return
+    path = find_dotenv(usecwd=True) or find_dotenv()
+    if path:
+        load_dotenv(path)
+
+
 def load_yaml(path: Path) -> dict:
     with open(path) as handle:
         return yaml.load(handle, Loader=MatrixLoader)

@@ -11,6 +11,7 @@ text-only LLM such as the fine-tuned ModernBERT in ``scripts/inference.py``).
 from __future__ import annotations
 
 import base64
+import json
 import os
 from typing import Callable
 
@@ -28,6 +29,9 @@ SENTIMENT_LABELS = {
 
 # Kept identical across all MLLMs so Task 2 descriptions stay comparable.
 DESCRIPTION_PROMPT = "Describe this image in details."
+
+# A run whose first requests all fail is misconfigured; stop it there.
+FAILURES_BEFORE_ABORT = 5
 
 _MIME_BY_EXT = {
     ".jpg": "image/jpeg",
@@ -49,12 +53,37 @@ def build_classification_prompt(p_version: str) -> str:
 
 
 def find_image(image_id: str, image_dir: str) -> str | None:
-    """Returns the path to ``{image_id}.jpg`` under part1..part6, or None."""
-    for part in [f"part{i}" for i in range(1, 7)]:
-        path = os.path.join(image_dir, part, f"{image_id}.jpg")
+    """Returns the path to ``{image_id}.jpg`` in ``image_dir``, or None.
+
+    The cluster keeps the PerceptSent images split across part1..part6; a
+    local copy is usually one flat folder. Both layouts are accepted.
+    """
+    candidates = [os.path.join(image_dir, f"{image_id}.jpg")]
+    candidates += [
+        os.path.join(image_dir, f"part{i}", f"{image_id}.jpg") for i in range(1, 7)
+    ]
+    for path in candidates:
         if os.path.exists(path):
             return path
     return None
+
+
+def load_image_frame(path: str) -> pd.DataFrame:
+    """Returns a DataFrame with an ``id`` column of the images to process.
+
+    A ``.json`` path is the PerceptSent vote file (``data/raw/dataset.json``):
+    every annotated image once, in annotation order, which is how a
+    label-independent description run covers every sigma/problem subset.
+    Anything else is a CSV that already carries an ``id`` column.
+    """
+    if path.endswith(".json"):
+        with open(path) as fh:
+            votes = json.load(fh)
+        ids = dict.fromkeys(
+            image["id"] for task in votes["tasks"] for image in task["images"]
+        )
+        return pd.DataFrame({"id": list(ids)})
+    return pd.read_csv(path)
 
 
 def extract_sentiment(response: str, p_version: str) -> str:
@@ -126,22 +155,27 @@ def run_over_dataset(
     infer_fn: Callable[[str], str],
     build_record: Callable[[str, str], dict],
     *,
-    resume: bool = False,
+    resume: bool = True,
     limit: int | None = None,
-    flush_every: int = 20,
+    flush_every: int = 1,
     desc: str = "Processing images",
 ) -> None:
     """Runs ``infer_fn`` over each image in ``df`` and writes a CSV incrementally.
 
+    Every answer is appended to ``output_file`` as soon as it arrives, and a
+    later run skips the ids already there, so an interrupted run loses at most
+    the request in flight and continues from where it stopped when started
+    again with the same command.
+
     Args:
         df: DataFrame with an ``id`` column of image identifiers.
-        image_dir: root directory holding part1..part6 image subdirectories.
+        image_dir: folder of ``{id}.jpg`` files, or a root holding part1..part6.
         output_file: destination CSV path.
         infer_fn: maps an image path to the raw model output (the model call).
         build_record: maps ``(image_id, raw_output)`` to a CSV row dict.
-        resume: skip ids already in ``output_file`` and append to it.
+        resume: keep ``output_file`` and skip its ids; False deletes it first.
         limit: process at most this many not-yet-done images (smoke testing).
-        flush_every: write to disk every N records to survive interruptions.
+        flush_every: append to disk every N records (1 = after each answer).
         desc: progress-bar label.
     """
     # A non-resume run starts clean so records never append onto stale data.
@@ -154,6 +188,7 @@ def run_over_dataset(
 
     results: list[dict] = []
     processed = 0
+    failed_in_a_row = 0
 
     for _, row in tqdm(df.iterrows(), total=len(df), desc=desc):
         image_id = str(row["id"])
@@ -172,8 +207,17 @@ def run_over_dataset(
         except Exception as exc:
             # Keep going on transient API/decoding errors; --resume recovers the rest.
             print(f"  [ERROR] Inference failed for {image_id}: {exc} — skipping")
+            failed_in_a_row += 1
+            if processed == 0 and failed_in_a_row >= FAILURES_BEFORE_ABORT:
+                # Nothing has succeeded yet: a wrong model id, key or flag,
+                # not a transient error. Stop before the whole run logs it.
+                raise SystemExit(
+                    f"the first {FAILURES_BEFORE_ABORT} requests all failed; "
+                    "fix the setup reported above before retrying"
+                )
             continue
 
+        failed_in_a_row = 0
         results.append(build_record(image_id, raw))
         processed += 1
 

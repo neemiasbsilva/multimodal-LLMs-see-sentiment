@@ -19,6 +19,7 @@ _ALPHA_LABELS = {
 # Models with no recognised caption prefix belong to MiniGPT-4 (Open Source).
 _CAPTION_DISPLAY = {
     "openai":   "GPT (OAI)",
+    "terra":    "GPT-6.1 Terra",
     "deepseek": "DeepSeek",
     "gemini":   "Gemini",
     "gemma4":   "Gemma4",

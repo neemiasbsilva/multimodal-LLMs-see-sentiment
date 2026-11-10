@@ -52,6 +52,16 @@ uv sync              # or: pip install -e .
 cp .env.example .env # add OPENAI_API_KEY / GEMINI_API_KEY if you will run Task 1/2
 ```
 
+The lock file pins CUDA 12.1 wheels, so `uv sync` only resolves on a Linux GPU machine. To
+run just the API stage (`caption`, `classify`, `build-data`, `hub`) on a laptop:
+
+```bash
+uv venv .venv --python 3.10
+uv pip install --python .venv --no-deps -e .
+uv pip install --python .venv pyyaml pandas tqdm python-dotenv "openai==1.99.1" "huggingface_hub>=0.34"
+source .venv/bin/activate
+```
+
 Classify a CSV of image descriptions with the paper's best checkpoint — no training, no
 dataset download:
 
@@ -72,7 +82,7 @@ them from the Hub before training or evaluating anything:
 ```bash
 mllmsent hub pull-datasets                    # inputs, captions, splits and results (~575 MB)
 mllmsent hub pull-datasets --groups inputs    # just the training CSVs (~233 MB)
-mllmsent matrix check                         # 141/141 datasets present
+mllmsent matrix check                         # 169/169 datasets present
 ```
 
 ---
@@ -138,16 +148,18 @@ Two axes run through every filename:
 - **P (problem)** ∈ {`p5`, `p3`, `p2plus`, `p2neg`} — label granularity. `p2plus` folds
   Neutral into Positive; `p2neg` folds it into Negative.
 
-The PerceptSent source images are not redistributed. Point `IMAGE_DIR` at a directory
-holding `part1/`…`part6/` to run Task 1 or Task 2 yourself.
+The PerceptSent source images are not redistributed. Point `IMAGE_DIR` at the folder of
+`{id}.jpg` files (or at a root holding `part1/`…`part6/`, the cluster layout) to run Task 1
+or Task 2 yourself.
 
 ---
 
 ## The experiment matrix
 
 Every experiment is one row of a cartesian product declared in
-[`experiments.yaml`](experiments.yaml) — 141 in total, replacing what used to be 141
-near-identical `config.yaml` files whose *directory names* encoded the experiment's identity.
+[`experiments.yaml`](experiments.yaml) — the paper's 141 plus the 28 GPT-6.1 Terra cells,
+replacing what used to be 141 near-identical `config.yaml` files whose *directory names*
+encoded the experiment's identity.
 
 ```yaml
 runs:
@@ -173,8 +185,8 @@ mllmsent matrix check          # every log dir, dataset and checkpoint accounted
 
 ```
 mllmsent matrix    list | resolve | show | check
-mllmsent classify  --mllm {openai|gemini|deepseek|phi4|gemma4} --sigma N --p P   # Task 1
-mllmsent caption   --mllm ... --sigma N                                          # Task 2
+mllmsent classify  --mllm {openai|terra|gemini|deepseek|phi4|gemma4} --sigma N --p P   # Task 1
+mllmsent caption   --mllm ... [--sigma N]                                              # Task 2
 mllmsent train     [ids...] [--track ...] [--gpu 0] [--dry-run]
 mllmsent sweep     [--track ...] [--skip-existing] [--continue-on-error]
 mllmsent predict   -- --checkpoint_path ... --input_file ... --output_file ...
@@ -199,7 +211,7 @@ without training, which is the fastest way to check a change did what you meant.
 
 ```bash
 # 1. Descriptions from the MLLM (Task 2)
-mllmsent caption --mllm openai --sigma 5 --resume
+mllmsent caption --mllm openai --sigma 5
 
 # 2. Train the text classifier on those descriptions
 mllmsent train openai-modernbert-p3-sigma5 --gpu 0
@@ -212,6 +224,34 @@ mllmsent evaluate stats
 For the direct baseline (Task 1), swap step 1 for
 `mllmsent classify --mllm openai --sigma 5 --p p3`.
 
+### The same pipeline with GPT-6.1 Terra
+
+`--mllm terra` sends GPT-6.1 Terra the request GPT-4o mini received — the same prompt, the
+image as a base64 data URL, a 300-token answer, temperature 1.0 — with reasoning off
+(`--reasoning-effort none`, Terra's non-reasoning mode), so the two description sets differ
+only in the model. The `OPENAI_API_KEY` in `.env` covers it.
+
+```bash
+mllmsent hub pull-datasets --groups inputs   # data/raw/dataset.json: the 5,000 image ids and votes
+mllmsent caption --mllm terra --limit 50     # pilot; the token totals print at the end
+mllmsent caption --mllm terra                # the rest -> data/gpt61-terra-classify/descriptions.csv
+mllmsent build-data -- --caption-file data/gpt61-terra-classify/descriptions.csv \
+    --dataset-json data/raw/dataset.json --output-dir data/gpt61-terra-classify
+mllmsent hub push-datasets                   # publishes inputs/gpt61-terra-classify/
+```
+
+Without `--sigma`, `caption` describes every annotated image once, which covers every σ/P
+subset `build-data` derives. Each answer is appended to the CSV as it arrives, and running
+the same command again continues from the ids already saved, so an interrupted run loses
+only the request in flight; `--restart` discards the file and starts over.
+
+Task 1 is `mllmsent classify --mllm terra --p p3 --sigma 3 --dataset-csv data/raw/dataset.json`
+(and `--p p5`): one label per image for all 5,000, written to `data/gpt61-terra-only/`.
+Without `--dataset-csv` it takes its image ids from the σ/P CSV, so run `build-data` first.
+On the GPU cluster, `mllmsent hub pull-datasets --groups inputs` then
+`mllmsent sweep --mllm terra` trains the 28 Task 2a/2b cells `experiments.yaml` declares for
+`terra`.
+
 Everything is written under [`output/`](output/), which is gitignored except for its
 `.gitkeep` — the result CSVs live on the Hub instead of in git history.
 
@@ -221,7 +261,7 @@ Everything is written under [`output/`](output/), which is gitignored except for
 
 ```
 multimodal-LLMs-see-sentiment/
-├── experiments.yaml          # the 141-experiment matrix — the single source of truth
+├── experiments.yaml          # the experiment matrix (141 paper + 28 Terra) — the single source of truth
 ├── src/mllmsent/
 │   ├── cli.py                # the mllmsent entry point
 │   ├── labels.py             # the one sentiment encoding everything derives from

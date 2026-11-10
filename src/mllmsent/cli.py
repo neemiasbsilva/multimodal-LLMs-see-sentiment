@@ -19,6 +19,7 @@ from mllmsent.commands import (
     tools_cmd,
     train_cmd,
 )
+from mllmsent.config import load_env
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -50,6 +51,9 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
+
+    # Before any matrix load: experiments.yaml's !env tags read IMAGE_DIR.
+    load_env()
 
     if args.gpu is not None:
         os.environ["CUDA_VISIBLE_DEVICES"] = str(args.gpu)

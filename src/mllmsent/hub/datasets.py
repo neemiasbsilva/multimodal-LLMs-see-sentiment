@@ -17,6 +17,7 @@ INPUT_DIRS = (
     "deepseek",
     "phi4-classify",
     "gemma4-classify",
+    "gpt61-terra-classify",
     "minigpt4-classify",
     "gpt4-openai-regression",
     "raw",
@@ -24,6 +25,7 @@ INPUT_DIRS = (
 
 CAPTION_DIRS = (
     "gpt4-openai-only",
+    "gpt61-terra-only",
     "gemini-only",
     "deepseek-only",
     "phi4-only",
