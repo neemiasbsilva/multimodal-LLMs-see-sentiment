@@ -40,16 +40,22 @@ def build_prompt(problem: str) -> str:
     )
 
 
-def build_training_arguments(spec: ExperimentSpec, output_dir: Path):
-    from transformers import TrainingArguments
+def build_training_arguments(spec: ExperimentSpec, output_dir: Path, max_epochs=None):
+    # SFTConfig, not TrainingArguments: trl 0.18 converts a plain TrainingArguments
+    # into an SFTConfig by popping push_to_hub_token, which transformers 5 removed
+    # (KeyError). Building the SFTConfig directly is what that conversion produced.
+    from trl import SFTConfig
 
-    return TrainingArguments(
+    return SFTConfig(
         output_dir=str(output_dir),
-        num_train_epochs=spec.hyperparameters.epochs,
+        num_train_epochs=max_epochs or spec.hyperparameters.epochs,
         per_device_train_batch_size=spec.hyperparameters.batch_size,
         per_device_eval_batch_size=1,
         optim="paged_adamw_32bit",
         save_strategy="epoch",
+        # Keeps the best and the latest epoch only; unbounded, every epoch of every
+        # fold left an adapter plus optimizer state on disk.
+        save_total_limit=1,
         logging_steps=25,
         learning_rate=2e-4,
         weight_decay=0.001,
@@ -58,9 +64,12 @@ def build_training_arguments(spec: ExperimentSpec, output_dir: Path):
         max_grad_norm=0.3,
         max_steps=-1,
         warmup_ratio=0.03,
-        group_by_length=True,
+        # transformers 5 replaced group_by_length=True with this; same sampler.
+        train_sampling_strategy="group_by_length",
         lr_scheduler_type="cosine",
-        report_to="tensorboard",
+        # tensorboard is not a dependency; the loss history is still written to
+        # trainer_state.json in each saved checkpoint.
+        report_to="none",
         eval_strategy="epoch",
         gradient_checkpointing=True,
         eval_accumulation_steps=2,
@@ -70,7 +79,7 @@ def build_training_arguments(spec: ExperimentSpec, output_dir: Path):
     )
 
 
-def train_adapter(spec, model, tokenizer, train_data, eval_data, output_dir: Path):
+def train_adapter(spec, model, tokenizer, train_data, eval_data, output_dir: Path, max_epochs=None):
     from peft import LoraConfig
     from transformers import EarlyStoppingCallback
     from trl import SFTTrainer
@@ -80,7 +89,7 @@ def train_adapter(spec, model, tokenizer, train_data, eval_data, output_dir: Pat
         train_dataset=train_data,
         eval_dataset=eval_data,
         peft_config=LoraConfig(task_type="CAUSAL_LM", **LORA),
-        args=build_training_arguments(spec, output_dir),
+        args=build_training_arguments(spec, output_dir, max_epochs),
         callbacks=[EarlyStoppingCallback(early_stopping_patience=10)],
     )
     trainer.train()
@@ -117,6 +126,16 @@ def coerce_predictions(raw, truth, num_classes: int):
             predictions.append((target + 1) % num_classes)
         targets.append(target)
     return predictions, targets
+
+
+def release_gpu_memory() -> None:
+    import gc
+
+    import torch
+
+    gc.collect()
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
 
 
 def train_qlora(spec: ExperimentSpec, matrix, folds: int = 5, max_epochs=None) -> dict:
@@ -174,6 +193,7 @@ def train_qlora(spec: ExperimentSpec, matrix, folds: int = 5, max_epochs=None) -
                 Dataset.from_pandas(train_df),
                 Dataset.from_pandas(val_df),
                 adapter_root / spec.qlora_adapter_name,
+                max_epochs=max_epochs,
             )
 
         raw = predict(val_df, model, tokenizer)
@@ -217,6 +237,13 @@ def train_qlora(spec: ExperimentSpec, matrix, folds: int = 5, max_epochs=None) -
                 }
             )
         results.to_csv(log_dir / f"test_logs_{fold + 1:02d}.csv", index=False)
+
+        # Each fold loads a fresh 4-bit model. Without this the previous ones stay on
+        # the GPU until device_map="auto" starts offloading layers to the CPU, which
+        # fails in bitsandbytes (Params4bit ... '_is_hf_initialized') and then OOMs.
+        del model, tokenizer
+        llama.cleanup()
+        release_gpu_memory()
 
     scores = metrics["f1_score"].to_numpy()
     mean_f1 = float(np.mean(scores))

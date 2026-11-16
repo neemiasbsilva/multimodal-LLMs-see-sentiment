@@ -139,6 +139,15 @@ class ExperimentSpec:
             f"_{self.problem}_sigma{self.sigma_token}_{self.fine_tuning}.pt"
         )
 
+    @property
+    def qlora_adapter_name(self) -> str:
+        """Directory for this experiment's LoRA adapter under checkpoints/llama/.
+
+        The checkpoint name minus its prefix and extension, so every cell gets its own
+        adapter directory instead of all of them sharing one.
+        """
+        return self.checkpoint_name.removeprefix("best_checkpoint_").removesuffix(".pt")
+
     def checkpoint_dir(self, root: Path) -> Path:
         if self.checkpoint_dir_override:
             return Path(self.checkpoint_dir_override)

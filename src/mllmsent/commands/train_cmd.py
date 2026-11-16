@@ -16,6 +16,15 @@ def resolve_targets(matrix, args):
     return list(selected_specs(matrix, args))
 
 
+def release_gpu_memory() -> None:
+    import gc
+
+    gc.collect()
+    torch = sys.modules.get("torch")
+    if torch is not None and torch.cuda.is_available():
+        torch.cuda.empty_cache()
+
+
 def has_results(matrix, spec) -> bool:
     return (matrix.paths.results_root / spec.log_dir / "test_logs.csv").is_file()
 
@@ -56,17 +65,23 @@ def run_specs(matrix, specs, args) -> int:
         try:
             train(spec, matrix, folds=args.folds, max_epochs=args.max_epochs)
         except Exception as error:
-            failures.append((spec.qualified_id, error))
-            print(f"  FAILED: {type(error).__name__}: {error}", file=sys.stderr)
+            # Keep only the message: the exception's traceback references the failed
+            # run's frames, and through them its model, which would stay on the GPU
+            # and make every following experiment run out of memory too.
+            message = f"{type(error).__name__}: {error}"
+            failures.append((spec.qualified_id, message))
+            print(f"  FAILED: {message}", file=sys.stderr)
             if not getattr(args, "continue_on_error", False):
                 raise
         else:
             print(f"  done in {time.time() - started:.0f}s")
+        # Outside the except block, where the exception and its frames are released.
+        release_gpu_memory()
 
     if failures:
         print(f"\n{len(failures)} of {len(specs)} failed:", file=sys.stderr)
-        for name, error in failures:
-            print(f"  {name}: {type(error).__name__}: {error}", file=sys.stderr)
+        for name, message in failures:
+            print(f"  {name}: {message}", file=sys.stderr)
         return 1
     return 0
 
