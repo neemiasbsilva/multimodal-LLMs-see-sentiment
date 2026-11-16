@@ -115,6 +115,10 @@ tracks:
         set: {batch_size: 4}
       - when: {backbone: modernbert, mllm: [phi4, gemma4]}
         set: {batch_size: 8}
+      # bs 32 runs out of memory on a 32 GB RTX 5090 (bs 16 peaks at ~23 GiB);
+      # 16 is the closest fit to the bs 32 of the openai lineage terra mirrors.
+      - when: {backbone: modernbert, mllm: [terra]}
+        set: {batch_size: 16}
       - only:
           - minigpt4-llama3-qlora-p3-sigma5
           - minigpt4-llama3-qlora-p5-sigma5
