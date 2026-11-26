@@ -89,7 +89,7 @@ mllmsent matrix check                         # 169/169 datasets present
 
 ## Pretrained checkpoints
 
-All 73 trained classifiers are on the Hub as fp16 safetensors:
+All 72 trained classifiers are on the Hub as fp16 safetensors:
 **[Neemias/multimodal-LLMs-See-Sentiment](https://huggingface.co/Neemias/multimodal-LLMs-See-Sentiment)**
 
 ```
