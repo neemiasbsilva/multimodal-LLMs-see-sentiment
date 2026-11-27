@@ -16,6 +16,8 @@ from mllmsent.models.heads import (
     DistilBERTModel, ModernBERTModel, Llama3
 )
 from peft import PeftModel
+from mllmsent.experiments.matrix import load_matrix
+from mllmsent.training.qlora import build_prompt
 import gc
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "1"  # Use GPU 1 (index 1)
@@ -117,27 +119,18 @@ def predict_bart_modernbert(model, tokenizer, texts, batch_size=32, max_len=512)
     return predictions
 
 
-def predict_llama(model, tokenizer, texts, num_classes, experiment_group):
+def predict_llama(model, tokenizer, texts, num_classes, experiment_group, llama_prompt="legacy"):
     """Predict using Llama model."""
     predictions = []
-    
-    # Define prompts based on number of classes and experiment group
-    if num_classes == 2 and experiment_group == "p2plus":
-        prompt = """What is the sentiment of this description? Please choose an answer from \
-            {"Negative": 1, "Neutral": 0}
-        """
-    elif num_classes == 2 and experiment_group == "p2neg":
-        prompt = """What is the sentiment of this description? Please choose an answer from \
-            {"Positive": 1, "Neutral": 0}
-        """
+
+    # Must be the llama_prompts variant the adapter was trained with.
+    if num_classes == 2 and experiment_group in ("p2plus", "p2neg"):
+        problem = experiment_group
     elif num_classes == 3:
-        prompt = """What is the sentiment of this description? Please choose an answer from \
-            {"Positive": 2, "Negative": 0, "Neutral": 1}
-        """
+        problem = "p3"
     else:
-        prompt = """What is the sentiment of this description? Please choose an answer from \
-            {"Positive": 4, "SlightlyPositive": 3, "Neutral": 2, "SlightlyNegative": 1, "Negative": 0}
-        """
+        problem = "p5"
+    prompt = build_prompt(load_matrix().llama_prompts[llama_prompt], problem)
     
     # Create pipeline for text generation
     pipe = pipeline(
@@ -171,8 +164,9 @@ def inference(
     texts, 
     num_classes, 
     experiment_group=None,
-    batch_size=32, 
-    max_len=512
+    batch_size=32,
+    max_len=512,
+    llama_prompt="legacy",
 ):
     """
     Perform inference using the specified model.
@@ -186,6 +180,7 @@ def inference(
         experiment_group (str): Experiment group for Llama prompts
         batch_size (int): Batch size for inference
         max_len (int): Maximum sequence length
+        llama_prompt (str): llama_prompts variant in experiments.yaml the adapter was trained with
     
     Returns:
         list: Predictions for the input texts
@@ -203,7 +198,7 @@ def inference(
         if experiment_group is None:
             raise ValueError("experiment_group is required for Llama inference")
         model, tokenizer = load_llama_model(checkpoint_path, model_path)
-        predictions = predict_llama(model, tokenizer, texts, num_classes, experiment_group)
+        predictions = predict_llama(model, tokenizer, texts, num_classes, experiment_group, llama_prompt)
         
     else:
         raise ValueError(f"Unsupported model name: {model_name}")
@@ -234,6 +229,9 @@ def main():
                        help="Maximum sequence length")
     parser.add_argument("--text_column", type=str, default="text",
                        help="Name of the text column in the input CSV")
+    parser.add_argument("--llama_prompt", type=str, default="legacy",
+                       help="llama_prompts variant in experiments.yaml the adapter was trained with "
+                            "(legacy: the published runs; standard: the GPT-6.1 Terra runs)")
     
     args = parser.parse_args()
     
@@ -257,7 +255,8 @@ def main():
         num_classes=args.num_classes,
         experiment_group=args.experiment_group,
         batch_size=args.batch_size,
-        max_len=args.max_len
+        max_len=args.max_len,
+        llama_prompt=args.llama_prompt,
     )
     
     # Save results

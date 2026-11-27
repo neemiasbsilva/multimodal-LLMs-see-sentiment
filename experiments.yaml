@@ -101,6 +101,33 @@ backbones:
     epochs: 15
     modality: image
 
+# Sentiment labels and integer codes the llama3-qlora prompt lists, per problem:
+#   What is the sentiment of this description? Please choose an answer from {"<label>": <code>, ...}
+# Labels appear in the order written here. The targets always use the
+# mllmsent.labels encoding; the model learns which code means what from the
+# "=<code>" targets it is fine-tuned on, or from the few-shot examples.
+# A run block picks a variant with `llama_prompt:` (default: standard).
+# padding: spaces between "from" and the label map, and after its newline.
+llama_prompts:
+  # Codes equal to the mllmsent.labels encoding; the prompt the paper prints.
+  standard:
+    padding: {before: 1, after: 0}
+    labels:
+      p2plus: {Negative: 1, Positive: 0}
+      p2neg: {Negative: 0, Positive: 1}
+      p3: {Negative: 1, Neutral: 0, Positive: 2}
+      p5: {Negative: 0, SlightlyNegative: 1, Neutral: 2, SlightlyPositive: 3, Positive: 4}
+  # The prompt the published LLaMA-3 runs used, kept as run. p3 gives Negative
+  # and Neutral each other's codes, and the two-class maps name a Neutral class.
+  # The padding is the indentation of the original backslash-continued string.
+  legacy:
+    padding: {before: 25, after: 20}
+    labels:
+      p2plus: {Negative: 1, Neutral: 0}
+      p2neg: {Positive: 1, Neutral: 0}
+      p3: {Positive: 2, Negative: 0, Neutral: 1}
+      p5: {Positive: 4, SlightlyPositive: 3, Neutral: 2, SlightlyNegative: 1, Negative: 0}
+
 tracks:
   finetuning:
     tree: experiments-finetuning
@@ -199,6 +226,7 @@ runs:
     backbone: [modernbert, bart, llama3-qlora]
     problem: [p3, p5]
     sigma: [3, 5]
+    llama_prompt: legacy
 
   # The modernbert runs of this block sit in directories named "...-qlora-..."
   # although they are not qLoRA; the name is kept so existing results resolve.
@@ -208,6 +236,7 @@ runs:
     backbone: [modernbert, llama3-qlora]
     problem: [p3, p5]
     sigma: [3, 5]
+    llama_prompt: legacy
     dir_kind: {modernbert: qlora}
 
   - id: openweights-finetuned
@@ -226,6 +255,7 @@ runs:
     backbone: [modernbert, bart, llama3-qlora]
     problem: [p3, p5]
     sigma: [3, 5]
+    llama_prompt: standard
 
   - id: core-not-finetuned
     track: not-finetuning
@@ -233,6 +263,7 @@ runs:
     backbone: [modernbert, bart, distilbert, llama3-qlora]
     problem: [p3, p5]
     sigma: [3, 5]
+    llama_prompt: legacy
 
   - id: gemini-not-finetuned
     track: not-finetuning
@@ -240,6 +271,7 @@ runs:
     backbone: [modernbert, llama3-qlora]
     problem: [p3, p5]
     sigma: [3, 5]
+    llama_prompt: legacy
 
   - id: openweights-not-finetuned
     track: not-finetuning
@@ -254,6 +286,7 @@ runs:
     backbone: [modernbert, bart, distilbert, llama3-qlora]
     problem: [p3, p5]
     sigma: [3, 5]
+    llama_prompt: standard
 
   - id: twitter-transfer
     track: twitter
@@ -261,6 +294,7 @@ runs:
     backbone: [modernbert, bart, distilbert, llama3-qlora]
     problem: [p2plus, p2neg]
     sigma: [3, 5]
+    llama_prompt: legacy
 
   - id: swin-image-baseline
     track: swin

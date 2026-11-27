@@ -1,11 +1,9 @@
 """LLaMA-3 qLoRA track.
 
 Fine-tuned runs train a LoRA adapter and then score the held-out fold;
-not-finetuned runs skip training and prompt the base model few-shot. The label
-map in the prompt is derived from mllmsent.labels, which corrects the hardcoded
-maps the previous implementation used (p3 claimed Negative=0/Neutral=1 against a
-ground truth of Neutral=0/Negative=1, and the two-class prompts named a Neutral
-class that no longer exists after folding).
+not-finetuned runs skip training and prompt the base model few-shot. The labels
+and codes the prompt lists come from `llama_prompts` in experiments.yaml, picked
+per run block.
 """
 
 from __future__ import annotations
@@ -23,21 +21,20 @@ from tqdm import tqdm
 
 from mllmsent.data.experiment_data import load_experiment_frame, load_twitter_validation
 from mllmsent.experiments.spec import ExperimentSpec
-from mllmsent.labels import label2id
 
 KFOLD_SEED = 42
 FEW_SHOT_EXAMPLES = 15
 
 LORA = {"lora_alpha": 8, "lora_dropout": 0.1, "r": 32, "bias": "none"}
 
+QUESTION = "What is the sentiment of this description? Please choose an answer from"
 
-def build_prompt(problem: str) -> str:
-    mapping = label2id(problem)
-    rendered = ", ".join(f'"{name}": {index}' for name, index in mapping.items())
-    return (
-        "What is the sentiment of this description? "
-        f"Please choose an answer from {{{rendered}}}\n"
-    )
+
+def build_prompt(variant: dict, problem: str) -> str:
+    """Renders one `llama_prompts` entry of experiments.yaml for a problem."""
+    labels = ", ".join(f'"{name}": {code}' for name, code in variant["labels"][problem].items())
+    padding = variant.get("padding", {})
+    return f"{QUESTION}{' ' * padding.get('before', 1)}{{{labels}}}\n{' ' * padding.get('after', 0)}"
 
 
 def build_training_arguments(spec: ExperimentSpec, output_dir: Path, max_epochs=None):
@@ -156,7 +153,7 @@ def train_qlora(spec: ExperimentSpec, matrix, folds: int = 5, max_epochs=None) -
         else None
     )
 
-    prompt = build_prompt(spec.problem)
+    prompt = build_prompt(matrix.llama_prompts[spec.llama_prompt], spec.problem)
     adapter_root = spec.checkpoint_dir(matrix.paths.checkpoint_root) / "llama"
     kfold = KFold(n_splits=folds, shuffle=True, random_state=KFOLD_SEED)
     metrics = pd.DataFrame([])

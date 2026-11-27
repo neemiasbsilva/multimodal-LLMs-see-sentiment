@@ -16,6 +16,8 @@ from mllmsent.experiments.spec import (
 )
 
 IDENTITY_FIELDS = ("mllm", "backbone", "problem", "sigma", "track")
+LLAMA_BACKBONE = "llama3-qlora"
+DEFAULT_LLAMA_PROMPT = "standard"
 
 
 @dataclass(frozen=True, slots=True)
@@ -24,6 +26,7 @@ class Matrix:
     paths: Paths
     hub: dict[str, str]
     source: Path
+    llama_prompts: dict[str, dict]
 
     def select(self, **filters) -> tuple[ExperimentSpec, ...]:
         selected = self.specs
@@ -128,12 +131,18 @@ def load_matrix(path: str | Path | None = None) -> Matrix:
     }
     tracks = document["tracks"]
     aliases = document.get("checkpoint_aliases", {})
+    llama_prompts = document.get("llama_prompts", {})
 
     specs: list[ExperimentSpec] = []
     for block in document["runs"]:
         track_name = block["track"]
         track = tracks[track_name]
         dir_kind_map = block.get("dir_kind") or {}
+        llama_prompt = block.get("llama_prompt", DEFAULT_LLAMA_PROMPT)
+        if LLAMA_BACKBONE in block["backbone"]:
+            missing = [p for p in block["problem"] if p not in llama_prompts.get(llama_prompt, {}).get("labels", {})]
+            if missing:
+                raise KeyError(f"run {block.get('id')}: llama_prompts.{llama_prompt} has no labels for {missing}")
 
         combinations = itertools.product(
             block["mllm"], block["backbone"], block["problem"], block["sigma"]
@@ -188,6 +197,7 @@ def load_matrix(path: str | Path | None = None) -> Matrix:
                     dataset_override=_per_spec_override(
                         block, "dataset_override", spec_id
                     ),
+                    llama_prompt=llama_prompt if backbone == LLAMA_BACKBONE else None,
                 )
             )
 
@@ -196,4 +206,5 @@ def load_matrix(path: str | Path | None = None) -> Matrix:
         paths=Paths.from_mapping(document.get("paths", {}), root),
         hub=document.get("hub", {}),
         source=source,
+        llama_prompts=llama_prompts,
     )

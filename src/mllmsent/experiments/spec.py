@@ -80,6 +80,7 @@ class ExperimentSpec:
     checkpoint_alias: str | None = None
     checkpoint_dir_override: str | None = None
     dataset_override: str | None = None
+    llama_prompt: str | None = None  # llama_prompts variant in experiments.yaml
 
     @property
     def sigma_token(self) -> str:
