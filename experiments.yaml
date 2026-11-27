@@ -220,6 +220,9 @@ tracks:
     hyperparameters: {learning_rate: 1e-5, batch_size: 16, patience: 10}
 
 runs:
+  # deepseek-modernbert-p3-sigma3 of this block: the paper reports the five
+  # folds of experiments-finetuning/deepseek-modernbert-experiment-p3-alpha3/
+  # logs/test_logs.csv (fold F1 70.7, 67.8, 70.9, 72.5, 72.1; mean 70.8 +- 2.3).
   - id: core-finetuned
     track: finetuning
     mllm: [openai, deepseek, minigpt4]
